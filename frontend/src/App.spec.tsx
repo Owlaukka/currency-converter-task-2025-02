@@ -5,6 +5,6 @@ import App from "./App";
 describe("App", () => {
   it("displays the correct heading", () => {
     render(<App />);
-    expect(screen.getByRole("heading", { name: /vite \+ react/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /Currency-conversion App/i })).toBeInTheDocument();
   });
 });
