@@ -1,15 +1,15 @@
 {
-  "name": "frontend",
+  "name": "current-converter-ui",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
+    "lint": "eslint ./src",
     "preview": "vite preview",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "format": "prettier --write ./src",
+    "format:check": "prettier --check ./src",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui"
@@ -35,6 +35,7 @@
     "globals": "^15.14.0",
     "happy-dom": "^17.1.3",
     "prettier": "^3.5.2",
+    "prettier-plugin-tailwindcss": "^0.6.11",
     "tailwindcss": "^4.0.8",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.22.0",
