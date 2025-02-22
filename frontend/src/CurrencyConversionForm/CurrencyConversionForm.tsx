@@ -7,7 +7,7 @@ interface CurrencyConversionFormProps {
 
 const CurrencyConversionForm: FC<CurrencyConversionFormProps> = () => {
   return (
-    <form aria-label="currency-conversion-form" className="w-full max-w-md">
+    <form aria-label="Currency-conversion form" className="w-full max-w-md">
       <div className="space-y-4"></div>
     </form>
   );
