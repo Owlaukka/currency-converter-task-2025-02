@@ -52,4 +52,24 @@ describe("CurrencyConversionForm", () => {
     // Then
     expect(amountField).toHaveValue(100);
   });
+
+  it("should not allow inputting non-letters as currency selections", async () => {
+    // Given
+    const user = userEvent.setup();
+    render(<CurrencyConversionForm />);
+
+    // When
+    const sourceCurrencyField = screen.getByRole("textbox", { name: /source currency/i });
+    const targetCurrencyField = screen.getByRole("textbox", { name: /target currency/i });
+
+    const sourceCurrencyInput = "2@(/& CHF /-";
+    await user.type(sourceCurrencyField, sourceCurrencyInput);
+
+    const targetCurrencyInput = "2@(/& EUR /-";
+    await user.type(targetCurrencyField, targetCurrencyInput);
+
+    // Then
+    expect(sourceCurrencyField).toHaveValue("CHF");
+    expect(targetCurrencyField).toHaveValue("EUR");
+  });
 });
