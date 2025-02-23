@@ -6,6 +6,7 @@
 - Improve linting (see below)
 - Add searchable source and target currency-selection using currency list data from the swop
 - Set better default-values to currency-selections and amount
+- Handle possible errors from invalid locale on currency-amount field
 
 ### Expanding the ESLint configuration
 

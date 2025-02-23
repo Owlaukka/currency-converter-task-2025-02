@@ -1,4 +1,5 @@
 import { FC } from "react";
+import CurrencyInput from "react-currency-input-field";
 import { Controller, useForm } from "react-hook-form";
 
 interface FormValues {
@@ -9,8 +10,13 @@ interface FormValues {
 
 const PERMITTED_CURRENCY_CHARACTERS_REGEXP = /[^a-zA-Z]/g;
 
-const CurrencyConversionForm: FC = () => {
-  const { register, control } = useForm<FormValues>();
+interface CurrencyConversionFormProps {
+  // These are just helpful example types
+  locale: "fi" | "sv" | "en" | string;
+}
+
+const CurrencyConversionForm: FC<CurrencyConversionFormProps> = ({ locale }) => {
+  const { control } = useForm<FormValues>();
 
   return (
     <form aria-label="Currency-conversion form">
@@ -62,7 +68,24 @@ const CurrencyConversionForm: FC = () => {
 
       <div>
         <label htmlFor="amount">Amount</label>
-        <input {...register("amount")} type="number" id="amount" />
+        <Controller
+          name="amount"
+          control={control}
+          render={({ field }) => (
+            <CurrencyInput
+              id={field.name}
+              name={field.name}
+              value={field.value}
+              decimalScale={2}
+              allowNegativeValue={false}
+              onValueChange={(val) => {
+                field.onChange(val ?? "");
+              }}
+              formatValueOnBlur
+              intlConfig={{ locale }}
+            />
+          )}
+        />
       </div>
     </form>
   );
