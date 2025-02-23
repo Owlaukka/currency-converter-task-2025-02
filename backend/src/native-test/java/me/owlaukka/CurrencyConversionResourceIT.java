@@ -3,6 +3,6 @@ package me.owlaukka;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 
 @QuarkusIntegrationTest
-class GreetingResourceIT extends GreetingResourceTest {
+class CurrencyConversionResourceIT extends CurrencyConversionResourceTest {
     // Execute the same tests but in packaged mode.
-}
+} 
