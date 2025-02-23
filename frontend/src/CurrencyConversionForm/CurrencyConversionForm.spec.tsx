@@ -16,9 +16,40 @@ describe("CurrencyConversionForm", () => {
     // When
     const sourceCurrencyField = screen.getByRole("textbox", { name: /source currency/i });
 
-    await user.type(sourceCurrencyField, "EUR");
+    const currencyInput = "EUR";
+    await user.type(sourceCurrencyField, currencyInput);
 
     // Then
-    expect(sourceCurrencyField).toHaveValue("EUR");
+    expect(sourceCurrencyField).toHaveValue(currencyInput);
+  });
+
+  it("should allow selecting a target currency", async () => {
+    // Given
+    const user = userEvent.setup();
+    render(<CurrencyConversionForm />);
+
+    // When
+    const sourceCurrencyField = screen.getByRole("textbox", { name: /target currency/i });
+
+    const currencyInput = "USD";
+    await user.type(sourceCurrencyField, currencyInput);
+
+    // Then
+    expect(sourceCurrencyField).toHaveValue(currencyInput);
+  });
+
+  it("should allow inputting amount to be converted", async () => {
+    // Given
+    const user = userEvent.setup();
+    render(<CurrencyConversionForm />);
+
+    // When
+    const amountField = screen.getByRole("spinbutton", { name: /amount/i });
+
+    const amount = "100";
+    await user.type(amountField, amount);
+
+    // Then
+    expect(amountField).toHaveValue(100);
   });
 });

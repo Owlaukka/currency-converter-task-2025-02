@@ -11,6 +11,7 @@
     "format": "prettier --write ./src",
     "format:check": "prettier --check ./src",
     "test": "vitest",
+    "test:run": "vitest --run",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui"
   },
