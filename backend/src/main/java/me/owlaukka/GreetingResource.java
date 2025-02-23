@@ -1,16 +1,20 @@
 package me.owlaukka;
 
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.core.Response;
+import me.owlaukka.api.GreetingApi;
+import me.owlaukka.model.Greeting;
 
-@Path("/hello")
-public class GreetingResource {
+import java.time.OffsetDateTime;
 
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public String hello() {
-        return "Hello from Quarkus REST";
+@ApplicationScoped
+public class GreetingResource implements GreetingApi {
+
+    @Override
+    public Response getGreeting(String name) {
+        Greeting greeting = new Greeting();
+        greeting.setMessage("Hello " + (name != null ? name : "World") + "!");
+        greeting.setTimestamp(OffsetDateTime.now());
+        return Response.ok(greeting).build();
     }
 }
