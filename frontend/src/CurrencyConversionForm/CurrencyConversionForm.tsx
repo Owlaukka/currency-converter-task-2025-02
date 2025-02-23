@@ -7,6 +7,8 @@ interface FormValues {
   amount?: number;
 }
 
+const PERMITTED_CURRENCY_CHARACTERS_REGEXP = /[^a-zA-Z]/g;
+
 const CurrencyConversionForm: FC = () => {
   const { register, control } = useForm<FormValues>();
 
@@ -17,13 +19,17 @@ const CurrencyConversionForm: FC = () => {
         <Controller
           name="sourceCurrency"
           control={control}
+          defaultValue=""
           render={({ field }) => (
             <input
               {...field}
               id="source-currency"
               type="text"
               onChange={(e) => {
-                const filteredValue = e.target.value.replace(/[^a-zA-Z]/g, "");
+                const filteredValue = e.target.value.replace(
+                  PERMITTED_CURRENCY_CHARACTERS_REGEXP,
+                  ""
+                );
                 field.onChange(filteredValue);
               }}
             />
@@ -36,13 +42,17 @@ const CurrencyConversionForm: FC = () => {
         <Controller
           name="targetCurrency"
           control={control}
+          defaultValue=""
           render={({ field }) => (
             <input
               {...field}
               id="target-currency"
               type="text"
               onChange={(e) => {
-                const filteredValue = e.target.value.replace(/[^a-zA-Z]/g, "");
+                const filteredValue = e.target.value.replace(
+                  PERMITTED_CURRENCY_CHARACTERS_REGEXP,
+                  ""
+                );
                 field.onChange(filteredValue);
               }}
             />

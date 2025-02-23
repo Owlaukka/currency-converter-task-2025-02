@@ -4,6 +4,8 @@
 
 - Add i18n support
 - Improve linting (see below)
+- Add searchable source and target currency-selection using currency list data from the swop
+- Set better default-values to currency-selections and amount
 
 ### Expanding the ESLint configuration
 
