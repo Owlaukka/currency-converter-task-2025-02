@@ -32,10 +32,9 @@ const CurrencyConversionForm: FC<CurrencyConversionFormProps> = ({ locale }) => 
               id="source-currency"
               type="text"
               onChange={(e) => {
-                const filteredValue = e.target.value.replace(
-                  PERMITTED_CURRENCY_CHARACTERS_REGEXP,
-                  ""
-                );
+                const filteredValue = e.target.value
+                  .replace(PERMITTED_CURRENCY_CHARACTERS_REGEXP, "")
+                  .toUpperCase();
                 field.onChange(filteredValue);
               }}
             />
@@ -55,10 +54,9 @@ const CurrencyConversionForm: FC<CurrencyConversionFormProps> = ({ locale }) => 
               id="target-currency"
               type="text"
               onChange={(e) => {
-                const filteredValue = e.target.value.replace(
-                  PERMITTED_CURRENCY_CHARACTERS_REGEXP,
-                  ""
-                );
+                const filteredValue = e.target.value
+                  .replace(PERMITTED_CURRENCY_CHARACTERS_REGEXP, "")
+                  .toUpperCase();
                 field.onChange(filteredValue);
               }}
             />

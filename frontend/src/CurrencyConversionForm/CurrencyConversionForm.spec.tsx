@@ -74,6 +74,26 @@ describe("CurrencyConversionForm", () => {
     expect(targetCurrencyField).toHaveValue("EUR");
   });
 
+  it("should capitalize currency-type selections", async () => {
+    // Given
+    const user = userEvent.setup();
+    render(<CurrencyConversionForm locale="fi-FI" />);
+
+    // When
+    const sourceCurrencyField = screen.getByRole("textbox", { name: /source currency/i });
+    const targetCurrencyField = screen.getByRole("textbox", { name: /target currency/i });
+
+    const sourceCurrencyInput = "eUr";
+    await user.type(sourceCurrencyField, sourceCurrencyInput);
+
+    const targetCurrencyInput = "Usd";
+    await user.type(targetCurrencyField, targetCurrencyInput);
+
+    // Then
+    expect(sourceCurrencyField).toHaveValue("EUR");
+    expect(targetCurrencyField).toHaveValue("USD");
+  });
+
   it.each([
     { locale: "fi-FI", inputValue: "345.12", expectedValue: "34\u00A0512,00" },
     { locale: "fi", inputValue: "345.12", expectedValue: "34\u00A0512,00" },
