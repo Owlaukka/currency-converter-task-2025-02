@@ -1,4 +1,6 @@
 package me.owlaukka.rates;
 
-public record EuroExchangeRate(String targetCurrency, double rate) {
+import java.math.BigDecimal;
+
+public record EuroExchangeRate(String currencyCode, BigDecimal rate) {
 }

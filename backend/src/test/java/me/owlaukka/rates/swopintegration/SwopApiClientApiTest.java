@@ -1,7 +1,7 @@
 package me.owlaukka.rates.swopintegration;
 
-import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import me.owlaukka.rates.swopintegration.model.Rate;
 import org.junit.jupiter.api.Test;
@@ -10,7 +10,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @QuarkusTest
 @QuarkusTestResource(SwopApiWireMockResource.class)
@@ -33,22 +35,22 @@ class SwopApiClientApiTest {
         
         // Verify EUR rate
         Rate eurRate = rates.stream()
-            .filter(r -> r.getQuoteCurrency().equals("EUR"))
+                .filter(r -> r.quoteCurrency().equals("EUR"))
             .findFirst()
             .orElseThrow();
-        assertEquals("BTC", eurRate.getBaseCurrency());
-        assertEquals(new BigDecimal("39000.50"), eurRate.getQuote());
-        assertNotNull(eurRate.getDate());
-        assertFalse(eurRate.getDate().isAfter(LocalDate.now()));
+        assertEquals("BTC", eurRate.baseCurrency());
+        assertEquals(new BigDecimal("39000.50"), eurRate.quote());
+        assertNotNull(eurRate.date());
+        assertFalse(eurRate.date().isAfter(LocalDate.now()));
 
         // Verify USD rate
         Rate usdRate = rates.stream()
-            .filter(r -> r.getQuoteCurrency().equals("USD"))
+                .filter(r -> r.quoteCurrency().equals("USD"))
             .findFirst()
             .orElseThrow();
-        assertEquals("BTC", usdRate.getBaseCurrency());
-        assertEquals(new BigDecimal("42150.75"), usdRate.getQuote());
-        assertNotNull(usdRate.getDate());
-        assertFalse(usdRate.getDate().isAfter(LocalDate.now()));
+        assertEquals("BTC", usdRate.baseCurrency());
+        assertEquals(new BigDecimal("42150.75"), usdRate.quote());
+        assertNotNull(usdRate.date());
+        assertFalse(usdRate.date().isAfter(LocalDate.now()));
     }
 } 
