@@ -39,7 +39,7 @@ class SwopExchangeRateIntegrationServiceImplTest {
         // Given
         var returnedRates = List.of(
                 new Rate("EUR", "USD", new BigDecimal("1.0423"), LocalDate.parse("2025-01-30")),
-                new Rate("EUR", "CHF", new BigDecimal("54.58345"), LocalDate.parse("2025-02-04"))
+                new Rate("EUR", "CHF", new BigDecimal("54.58345"), LocalDate.parse("2025-01-30"))
         );
         String sourceCurrency = "USD";
         String targetCurrency = "CHF";
@@ -63,7 +63,7 @@ class SwopExchangeRateIntegrationServiceImplTest {
     void Should_ReturnExchangeRates_When_ReceivedCurrenciesAreInADifferentOrder() {
         // Given
         var returnedRates = List.of(
-                new Rate("EUR", "GBP", new BigDecimal("5"), LocalDate.parse("2025-02-10")),
+                new Rate("EUR", "GBP", new BigDecimal("5"), LocalDate.parse("2025-02-04")),
                 new Rate("EUR", "SGD", new BigDecimal("1.000012"), LocalDate.parse("2025-02-04"))
         );
         String sourceCurrency = "SGD";
@@ -107,6 +107,29 @@ class SwopExchangeRateIntegrationServiceImplTest {
         );
         String sourceCurrency = "USD";
         String targetCurrency = "CHF";
+
+        Mockito.when(swopApiClientApi.latest(List.of(sourceCurrency, targetCurrency)))
+                .thenReturn(returnedRates);
+
+        // When + Then
+        assertThrows(ExchangeRateIntegrationException.class,
+                () -> exchangeRateService.getEuroRatesForSourceAndTargetCurrency(sourceCurrency, targetCurrency));
+    }
+
+    @Test
+    void Should_ThrowIntegrationException_When_SwopResponseContainsInconsistentDates() {
+        // Given
+        // Not the same. This should probably not actually ever happen
+        var usdRateDate = LocalDate.parse("2025-01-30");
+        var chfRateDate = LocalDate.parse("2025-02-04");
+
+        String sourceCurrency = "USD";
+        String targetCurrency = "CHF";
+
+        var returnedRates = List.of(
+                new Rate("EUR", sourceCurrency, new BigDecimal("1.0423"), usdRateDate),
+                new Rate("EUR", targetCurrency, new BigDecimal("54.58345"), chfRateDate)
+        );
 
         Mockito.when(swopApiClientApi.latest(List.of(sourceCurrency, targetCurrency)))
                 .thenReturn(returnedRates);

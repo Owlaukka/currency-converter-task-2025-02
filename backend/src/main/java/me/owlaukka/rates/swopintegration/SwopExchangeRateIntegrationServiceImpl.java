@@ -25,7 +25,6 @@ public class SwopExchangeRateIntegrationServiceImpl implements ExchangeRateServi
                 .orElseThrow(() -> new ExchangeRateIntegrationException("Did not find requested rate for '" + currencyCode + "' in the response from integration"));
     }
 
-    // TODO: handle error-cases more gracefully; returned list does not contain source or target, API throws
     @Override
     public EuroRatesForSourceAndTargetCurrency getEuroRatesForSourceAndTargetCurrency(
             String sourceCurrency,
@@ -37,10 +36,12 @@ public class SwopExchangeRateIntegrationServiceImpl implements ExchangeRateServi
         Rate targetRate = findRateFromResponse(targetCurrency, rates);
 
         // Create response
-        var sourceEuroRate = new EuroExchangeRate(sourceCurrency, sourceRate.quote());
-        var targetEuroRate = new EuroExchangeRate(targetCurrency, targetRate.quote());
+        var sourceEuroRate = new EuroExchangeRate(sourceRate.quoteCurrency(), sourceRate.quote());
+        var targetEuroRate = new EuroExchangeRate(targetRate.quoteCurrency(), targetRate.quote());
 
-        // TODO: what if the dates are different?
+        if (!sourceRate.date().equals(targetRate.date())) {
+            throw new ExchangeRateIntegrationException("Dates of rates from Swop are different");
+        }
         var dateOfRates = sourceRate.date();
 
         return new EuroRatesForSourceAndTargetCurrency(sourceEuroRate, targetEuroRate, dateOfRates);
