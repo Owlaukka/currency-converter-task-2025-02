@@ -8,6 +8,9 @@ If you want to learn more about Quarkus, please visit its website: <https://quar
 
 - Improve OpenAPI spec with minimum amounts and maybe precision
     - Make sure the validations work or make them manual
+- Figure out better way to mock GQL requests
+- Add caching to AT LEAST currencies GQL request
+- Add integration tests
 
 ## Running the application in dev mode
 
