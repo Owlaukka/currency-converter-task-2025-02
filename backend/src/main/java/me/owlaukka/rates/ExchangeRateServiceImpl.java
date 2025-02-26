@@ -14,6 +14,8 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
         this.swopApiClientApi = swopApiClientApi;
     }
 
+    // TODO: handle error-cases more gracefully; returned list does not contain source or target, API throws
+    // TODO: replace Pair with a more descriptive class
     @Override
     public Pair<EuroExchangeRate, EuroExchangeRate> getEuroRatesForSourceAndTargetCurrency(String sourceCurrency, String targetCurrency) {
         var rates = swopApiClientApi.latest(List.of(sourceCurrency, targetCurrency));
