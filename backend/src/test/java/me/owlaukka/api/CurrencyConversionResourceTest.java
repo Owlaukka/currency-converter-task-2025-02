@@ -2,8 +2,10 @@ package me.owlaukka.api;
 
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.ws.rs.core.Response;
 import me.owlaukka.currencyconversion.ConversionResult;
 import me.owlaukka.currencyconversion.CurrencyConversionService;
+import me.owlaukka.rates.ExchangeRateIntegrationException;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -57,6 +59,22 @@ class CurrencyConversionResourceTest {
                 .statusCode(500)
                 .body("code", equalTo("INTERNAL_SERVER_ERROR"))
                 .body("message", equalTo("Something went wrong"));
+    }
+
+    @Test
+    void Should_Return503Error_When_ExternalIntegrationFails() {
+        Mockito.when(currencyConversionService.convert(Mockito.anyString(), Mockito.anyString(), Mockito.any(BigDecimal.class)))
+                .thenThrow(new ExchangeRateIntegrationException("Swop failed"));
+        given()
+                .when()
+                .queryParam("sourceCurrency", "USD")
+                .queryParam("targetCurrency", "GBP")
+                .queryParam("amount", "123")
+                .get("/conversion")
+                .then()
+                .statusCode(503)
+                .body("code", equalTo(Response.Status.SERVICE_UNAVAILABLE.name()))
+                .body("message", equalTo("Service temporarily unavailable"));
     }
 
     @Test
