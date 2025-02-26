@@ -1,8 +1,13 @@
-# currencyconverter
+# Currency Converter Backend
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+
+## TODOs
+
+- Improve OpenAPI spec with minimum amounts and maybe precision
+    - Make sure the validations work or make them manual
 
 ## Running the application in dev mode
 
@@ -12,7 +17,7 @@ You can run your application in dev mode that enables live coding using:
 ./gradlew quarkusDev
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+> **_NOTE:_** Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
 
 ## Packaging and running the application
 
