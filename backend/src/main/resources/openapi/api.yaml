@@ -71,7 +71,31 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-
+  /currencies:
+    get:
+      summary: Get supported currencies
+      operationId: getSupportedCurrencies
+      tags:
+        - currencies
+      responses:
+        "200":
+          description: List of supported currency codes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  minLength: 3
+                  maxLength: 3
+                  pattern: "^[A-Z]{3}$"
+                example: [ "USD", "EUR", "GBP", "JPY" ]
+        "500":
+          description: Something unknown went wrong
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     Error:

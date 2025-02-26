@@ -13,4 +13,6 @@ public interface SwopApiClientApi {
     List<Rate> latest(List<@NonNull String> quoteCurrencies);
 
     List<Currency> currencies(List<@NonNull String> currencyCodes);
+
+    List<Currency> currencies();
 }
