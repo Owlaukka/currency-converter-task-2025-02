@@ -1,0 +1,96 @@
+openapi: 3.0.3
+info:
+  title: Currency Conversion API
+  version: 1.0.0
+  description: API for currency conversion
+
+paths:
+  /conversion:
+    get:
+      summary: Convert amount between currencies
+      operationId: convertCurrency
+      tags:
+        - conversion
+      parameters:
+        - name: sourceCurrency
+          in: query
+          required: true
+          description: ISO 4217 currency code for the source currency
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 3
+            example: "USD"
+        - name: targetCurrency
+          in: query
+          required: true
+          description: ISO 4217 currency code for the target currency
+          schema:
+            type: string
+            minLength: 3
+            maxLength: 3
+            example: "EUR"
+        - name: amount
+          in: query
+          required: true
+          description: Amount to convert in the source currency (must be positive)
+          schema:
+            type: string
+            format: decimal
+            minimum: 0.01
+            example: "100.50"
+      responses:
+        "200":
+          description: Successful conversion
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConversionResponse"
+        "400":
+          description: Invalid input or unsupported currency
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Something unknown went wrong
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: External exchange rate service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+
+    ConversionResponse:
+      type: object
+      properties:
+        convertedAmount:
+          type: string
+          format: decimal
+          example: "91.25"
+          description: The converted amount in the target currency
+        date:
+          type: string
+          format: date
+          description: The date when the conversion rate was valid
+          example: "2024-02-20"
