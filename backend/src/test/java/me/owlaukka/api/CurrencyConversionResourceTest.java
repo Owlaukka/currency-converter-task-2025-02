@@ -23,7 +23,7 @@ class CurrencyConversionResourceTest {
     CurrencyConversionService currencyConversionService;
 
     @Test
-    void basicConversion() {
+    void Should_ReturnConversion_When_GivenValidBasicData() {
         var conversionResult = new ConversionResult(new BigDecimal("85.00"), LocalDate.now());
 
         Mockito.when(currencyConversionService.convert("USD", "EUR", new BigDecimal("100.50")))
@@ -39,6 +39,23 @@ class CurrencyConversionResourceTest {
             .statusCode(200)
                 .body("convertedAmount", equalTo(conversionResult.convertedAmount().floatValue()))
                 .body("date", equalTo(conversionResult.date().toString()));
+    }
+
+    @Test
+    void Should_Return500Error_When_ConversionThrowsAGenericException() {
+        Mockito.when(currencyConversionService.convert("USD", "EUR", new BigDecimal("100.50")))
+                .thenThrow(new RuntimeException("Something went wrong"));
+
+        given()
+                .when()
+                .queryParam("sourceCurrency", "USD")
+                .queryParam("targetCurrency", "EUR")
+                .queryParam("amount", "100.50")
+                .get("/conversion")
+                .then()
+                .statusCode(500)
+                .body("code", equalTo("INTERNAL_SERVER_ERROR"))
+                .body("message", equalTo("Something went wrong"));
     }
 
     @Test
