@@ -5,6 +5,7 @@ import me.owlaukka.rates.ExchangeRateService;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 
 @ApplicationScoped
 public class CurrencyConversionServiceImpl implements CurrencyConversionService {
@@ -25,7 +26,11 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
      */
     @Override
     public ConversionResult convert(String sourceCurrency, String targetCurrency, BigDecimal amount) {
+        // TODO: parallelize these requests?
+        checkCurrenciesExist(sourceCurrency, targetCurrency);
+
         var exchangeRate = exchangeRateService.getEuroRatesForSourceAndTargetCurrency(sourceCurrency, targetCurrency);
+
         var sourceRate = exchangeRate.sourceRate().rate();
         var targetRate = exchangeRate.targetRate().rate();
 
@@ -36,5 +41,20 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
         var roundedAmountInTargetCurrency = amountInTargetCurrency.setScale(2, RoundingMode.HALF_UP);
 
         return new ConversionResult(roundedAmountInTargetCurrency, exchangeRate.dateOfRates());
+    }
+
+    private void checkCurrenciesExist(String sourceCurrency, String targetCurrency) {
+        var currencies = exchangeRateService.getCurrencies(List.of(sourceCurrency, targetCurrency));
+
+        var isSourceCurrencyValid = currencies.stream().anyMatch(currency -> currency.equals(sourceCurrency));
+        var isTargetCurrencyValid = currencies.stream().anyMatch(currency -> currency.equals(targetCurrency));
+
+        if (!isSourceCurrencyValid) {
+            throw new IllegalArgumentException("Source currency is not valid");
+        }
+
+        if (!isTargetCurrencyValid) {
+            throw new IllegalArgumentException("Target currency is not valid");
+        }
     }
 }

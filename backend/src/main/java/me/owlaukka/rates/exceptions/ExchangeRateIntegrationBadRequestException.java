@@ -1,4 +1,4 @@
-package me.owlaukka.rates;
+package me.owlaukka.rates.exceptions;
 
 public class ExchangeRateIntegrationBadRequestException extends RuntimeException {
     public ExchangeRateIntegrationBadRequestException(String message) {

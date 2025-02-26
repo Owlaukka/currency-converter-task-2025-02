@@ -5,7 +5,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 import me.owlaukka.model.Error;
-import me.owlaukka.rates.ExchangeRateIntegrationException;
+import me.owlaukka.rates.exceptions.ExchangeRateIntegrationException;
 
 @Provider
 public class ExchangeRateIntegrationExceptionMapper implements ExceptionMapper<ExchangeRateIntegrationException> {

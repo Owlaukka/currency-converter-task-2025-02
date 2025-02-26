@@ -5,10 +5,12 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.core.Response;
 import me.owlaukka.currencyconversion.ConversionResult;
 import me.owlaukka.currencyconversion.CurrencyConversionService;
-import me.owlaukka.rates.ExchangeRateIntegrationBadRequestException;
-import me.owlaukka.rates.ExchangeRateIntegrationException;
+import me.owlaukka.rates.exceptions.ExchangeRateIntegrationBadRequestException;
+import me.owlaukka.rates.exceptions.ExchangeRateIntegrationException;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
 import java.math.BigDecimal;
@@ -26,18 +28,19 @@ class CurrencyConversionResourceTest {
     @InjectMock
     CurrencyConversionService currencyConversionService;
 
-    @Test
-    void Should_ReturnConversion_When_GivenValidBasicData() {
+    @ParameterizedTest(name = "should return conversion when given valid data with amount {0}")
+    @ValueSource(strings = {"5", "1000.45", "543.4"})
+    void Should_ReturnConversion_When_GivenValidBasicData(String amount) {
         var conversionResult = new ConversionResult(new BigDecimal("85.00"), LocalDate.now());
 
-        Mockito.when(currencyConversionService.convert("USD", "EUR", new BigDecimal("100.50")))
+        Mockito.when(currencyConversionService.convert("USD", "EUR", new BigDecimal(amount)))
                 .thenReturn(conversionResult);
 
         given()
             .when()
             .queryParam("sourceCurrency", "USD")
             .queryParam("targetCurrency", "EUR")
-            .queryParam("amount", "100.50")
+                .queryParam("amount", amount)
             .get("/conversion")
             .then()
             .statusCode(200)
@@ -162,6 +165,22 @@ class CurrencyConversionResourceTest {
     }
 
     @Test
+    void Should_Return400Error_When_RequestingInvalidSourceCurrency() {
+        Mockito.when(currencyConversionService.convert(Mockito.anyString(), Mockito.anyString(), Mockito.any(BigDecimal.class)))
+                .thenThrow(new IllegalArgumentException("Bad source currency"));
+
+        given()
+                .when()
+                .queryParam("sourceCurrency", "USD")
+                .queryParam("targetCurrency", "GBP")
+                .queryParam("amount", "100.50")
+                .get("/conversion")
+                .then()
+                .statusCode(400)
+                .body("code", equalTo("BAD_REQUEST"));
+    }
+
+    @Test
     @Disabled("TODO: not yet implemented")
     void testInvalidAmount_Negative() {
         given()
@@ -177,8 +196,7 @@ class CurrencyConversionResourceTest {
     }
 
     @Test
-    @Disabled("TODO: not yet implemented")
-    void testInvalidAmount_Zero() {
+    void Should_ReturnValidationError440_When_GivenZeroAsTheAmount() {
         given()
             .when()
             .queryParam("sourceCurrency", "USD")
@@ -188,21 +206,62 @@ class CurrencyConversionResourceTest {
             .then()
             .statusCode(400)
             .body("code", is("VALIDATION_ERROR"))
-            .body("message", notNullValue());
+                .body("message", is("Amount must be positive"));
+    }
+
+    @Test
+    void Should_ReturnValidationError440_When_GivenNegativeAmount() {
+        given()
+                .when()
+                .queryParam("sourceCurrency", "USD")
+                .queryParam("targetCurrency", "EUR")
+                .queryParam("amount", "-5")
+                .get("/conversion")
+                .then()
+                .statusCode(400)
+                .body("code", is("VALIDATION_ERROR"))
+                .body("message", containsStringIgnoringCase("amount: must match \"^[0-9]+(.[0-9]{1,2})?$\""));
+    }
+
+    @Test
+    void Should_ReturnValidationError440_When_GivenAmountWithMoreThan2Scale() {
+        given()
+                .when()
+                .queryParam("sourceCurrency", "USD")
+                .queryParam("targetCurrency", "EUR")
+                .queryParam("amount", "100.123")
+                .get("/conversion")
+                .then()
+                .statusCode(400)
+                .body("code", is("VALIDATION_ERROR"))
+                .body("message", containsStringIgnoringCase("amount: must match \"^[0-9]+(.[0-9]{1,2})?$\""));
     }
     
     @Test
-    @Disabled("TODO: not yet implemented")
-    void testInvalidCurrencyCode() {
+    void Should_ReturnValidationError400_When_GivenAndInvalidSourceCurrency() {
         given()
             .when()
-            .queryParam("sourceCurrency", "INVALID")
+                .queryParam("sourceCurrency", "321")
             .queryParam("targetCurrency", "EUR")
             .queryParam("amount", "100")
             .get("/conversion")
             .then()
             .statusCode(400)
             .body("code", is("VALIDATION_ERROR"))
-            .body("message", notNullValue());
+                .body("message", containsStringIgnoringCase("sourceCurrency: must match \"^[A-Z]{3}$\""));
+    }
+
+    @Test
+    void Should_ReturnValidationError400_When_GivenAndInvalidTargetCurrency() {
+        given()
+                .when()
+                .queryParam("sourceCurrency", "USD")
+                .queryParam("targetCurrency", "low")
+                .queryParam("amount", "100")
+                .get("/conversion")
+                .then()
+                .statusCode(400)
+                .body("code", is("VALIDATION_ERROR"))
+                .body("message", containsStringIgnoringCase("targetCurrency: must match \"^[A-Z]{3}$\""));
     }
 } 

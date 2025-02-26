@@ -1,5 +1,7 @@
 package me.owlaukka.rates;
 
+import java.util.List;
+
 public interface ExchangeRateService {
     /**
      * Retrieves the exchange rate for a given currency pair.
@@ -12,4 +14,6 @@ public interface ExchangeRateService {
             String sourceCurrency,
             String targetCurrency
     );
+
+    List<String> getCurrencies(List<String> currencyCodes);
 }

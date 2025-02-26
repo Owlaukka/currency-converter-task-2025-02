@@ -20,6 +20,7 @@ paths:
             type: string
             minLength: 3
             maxLength: 3
+            pattern: "^[A-Z]{3}$"
             example: "USD"
         - name: targetCurrency
           in: query
@@ -29,6 +30,7 @@ paths:
             type: string
             minLength: 3
             maxLength: 3
+            pattern: "^[A-Z]{3}$"
             example: "EUR"
         - name: amount
           in: query
@@ -36,8 +38,7 @@ paths:
           description: Amount to convert in the source currency (must be positive)
           schema:
             type: string
-            format: decimal
-            minimum: 0.01
+            pattern: "^[0-9]+(.[0-9]{1,2})?$"
             example: "100.50"
       responses:
         "200":

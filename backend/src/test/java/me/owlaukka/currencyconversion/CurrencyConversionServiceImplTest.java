@@ -6,6 +6,7 @@ import jakarta.inject.Inject;
 import me.owlaukka.rates.EuroExchangeRate;
 import me.owlaukka.rates.EuroRatesForSourceAndTargetCurrency;
 import me.owlaukka.rates.ExchangeRateService;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -13,8 +14,10 @@ import org.mockito.Mockito;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @QuarkusTest
 class CurrencyConversionServiceImplTest {
@@ -59,6 +62,8 @@ class CurrencyConversionServiceImplTest {
         var givenSourceCurrencyCode = "GBP";
         var givenTargetCurrencyCode = "USD";
 
+        var returnedCurrencies = List.of(givenSourceCurrencyCode, givenTargetCurrencyCode);
+
         var dateOfRates = LocalDate.parse("2025-02-20");
         var returnedRates = new EuroRatesForSourceAndTargetCurrency(
                 new EuroExchangeRate(givenSourceCurrencyCode, returnedSourceRate),
@@ -66,6 +71,8 @@ class CurrencyConversionServiceImplTest {
                 dateOfRates
         );
 
+        Mockito.when(exchangeRateService.getCurrencies(Mockito.anyList()))
+                .thenReturn(returnedCurrencies);
         Mockito.when(exchangeRateService.getEuroRatesForSourceAndTargetCurrency(Mockito.anyString(), Mockito.anyString()))
                 .thenReturn(returnedRates);
 
@@ -79,5 +86,62 @@ class CurrencyConversionServiceImplTest {
                 dateOfRates
         );
         assertEquals(expectedConversionResult, conversionResult);
+    }
+
+    @Test
+    void Should_ThrowIllegalArgumentException_When_RequestingRatesForInvalidCurrencies() {
+        // Given
+        var givenSourceCurrencyCode = "YEN";
+        var givenTargetCurrencyCode = "MAR";
+        var givenAmountToConvert = new BigDecimal("100");
+
+        List<String> returnedCurrencies = List.of();
+
+        Mockito.when(exchangeRateService.getCurrencies(Mockito.anyList()))
+                .thenReturn(returnedCurrencies);
+
+        // When + Then
+        assertThrows(IllegalArgumentException.class, () ->
+                        currencyConversionService.convert(givenSourceCurrencyCode, givenTargetCurrencyCode, givenAmountToConvert),
+                "Invalid currency codes"
+        );
+    }
+
+    @Test
+    void Should_ThrowIllegalArgumentException_When_RequestedSourceCurrencyIsNotValue() {
+        // Given
+        var givenSourceCurrencyCode = "GBP";
+        var givenTargetCurrencyCode = "EUR";
+        var givenAmountToConvert = new BigDecimal("100");
+
+        List<String> returnedCurrencies = List.of("USD", "EUR");
+
+        Mockito.when(exchangeRateService.getCurrencies(Mockito.anyList()))
+                .thenReturn(returnedCurrencies);
+
+        // When + Then
+        assertThrows(IllegalArgumentException.class, () ->
+                        currencyConversionService.convert(givenSourceCurrencyCode, givenTargetCurrencyCode, givenAmountToConvert),
+                "Source currency is not valid"
+        );
+    }
+
+    @Test
+    void Should_ThrowIllegalArgumentException_When_RequestedTargetCurrencyIsNotValue() {
+        // Given
+        var givenSourceCurrencyCode = "USD";
+        var givenTargetCurrencyCode = "GBP";
+        var givenAmountToConvert = new BigDecimal("100");
+
+        List<String> returnedCurrencies = List.of("USD", "EUR");
+
+        Mockito.when(exchangeRateService.getCurrencies(Mockito.anyList()))
+                .thenReturn(returnedCurrencies);
+
+        // When + Then
+        assertThrows(IllegalArgumentException.class, () ->
+                        currencyConversionService.convert(givenSourceCurrencyCode, givenTargetCurrencyCode, givenAmountToConvert),
+                "Target currency is not valid"
+        );
     }
 }

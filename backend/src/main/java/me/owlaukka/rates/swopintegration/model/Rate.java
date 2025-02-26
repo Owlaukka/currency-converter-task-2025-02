@@ -1,6 +1,6 @@
 package me.owlaukka.rates.swopintegration.model;
 
-import me.owlaukka.rates.ExchangeRateIntegrationException;
+import me.owlaukka.rates.exceptions.ExchangeRateIntegrationException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
