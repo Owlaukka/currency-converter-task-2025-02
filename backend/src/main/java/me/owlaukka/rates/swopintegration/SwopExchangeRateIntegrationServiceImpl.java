@@ -9,7 +9,6 @@ import me.owlaukka.rates.ExchangeRateService;
 import me.owlaukka.rates.swopintegration.model.Rate;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @ApplicationScoped
 public class SwopExchangeRateIntegrationServiceImpl implements ExchangeRateService {
@@ -20,14 +19,10 @@ public class SwopExchangeRateIntegrationServiceImpl implements ExchangeRateServi
     }
 
     private static Rate findRateFromResponse(String currencyCode, List<Rate> rates) {
-        try {
-            return rates.stream()
-                    .filter(r -> r.quoteCurrency().equals(currencyCode))
-                    .findFirst()
-                    .orElseThrow();
-        } catch (NoSuchElementException e) {
-            throw new ExchangeRateIntegrationException("Did not find requested rate for '" + currencyCode + "' in the response from integration", e);
-        }
+        return rates.stream()
+                .filter(r -> r.quoteCurrency().equals(currencyCode))
+                .findFirst()
+                .orElseThrow(() -> new ExchangeRateIntegrationException("Did not find requested rate for '" + currencyCode + "' in the response from integration"));
     }
 
     // TODO: handle error-cases more gracefully; returned list does not contain source or target, API throws
