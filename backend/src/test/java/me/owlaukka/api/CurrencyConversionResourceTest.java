@@ -59,6 +59,45 @@ class CurrencyConversionResourceTest {
     }
 
     @Test
+    void Should_Return400Error_When_NoSourceCurrencyIsNotGiven() {
+        given()
+                .when()
+                .queryParam("targetCurrency", "EUR")
+                .queryParam("amount", "100.50")
+                .get("/conversion")
+                .then()
+                .statusCode(400)
+                .body("code", equalTo("VALIDATION_ERROR"))
+                .body("message", equalTo("Invalid input parameters: convertCurrency.sourceCurrency: must not be null"));
+    }
+
+    @Test
+    void Should_Return400Error_When_NoTargetCurrencyIsNotGiven() {
+        given()
+                .when()
+                .queryParam("sourceCurrency", "EUR")
+                .queryParam("amount", "100.50")
+                .get("/conversion")
+                .then()
+                .statusCode(400)
+                .body("code", equalTo("VALIDATION_ERROR"))
+                .body("message", equalTo("Invalid input parameters: convertCurrency.targetCurrency: must not be null"));
+    }
+
+    @Test
+    void Should_Return400Error_When_NoAmountIsNotGiven() {
+        given()
+                .when()
+                .queryParam("sourceCurrency", "USD")
+                .queryParam("targetCurrency", "GBP")
+                .get("/conversion")
+                .then()
+                .statusCode(400)
+                .body("code", equalTo("VALIDATION_ERROR"))
+                .body("message", equalTo("Invalid input parameters: convertCurrency.amount: must not be null"));
+    }
+
+    @Test
     @Disabled("TODO: not yet implemented")
     void testInvalidAmount_Negative() {
         given()
