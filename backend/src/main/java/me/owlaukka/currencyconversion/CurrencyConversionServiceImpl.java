@@ -43,6 +43,11 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
         return new ConversionResult(roundedAmountInTargetCurrency, exchangeRate.dateOfRates());
     }
 
+    @Override
+    public List<String> getAllSupportedCurrencies() {
+        return exchangeRateService.getAllSupportedCurrencies();
+    }
+
     private void checkCurrenciesExist(String sourceCurrency, String targetCurrency) {
         var currencies = exchangeRateService.getCurrencies(List.of(sourceCurrency, targetCurrency));
 
