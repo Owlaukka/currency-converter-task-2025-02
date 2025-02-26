@@ -176,4 +176,39 @@ class SwopExchangeRateIntegrationServiceImplTest {
                     () -> exchangeRateService.getCurrencies(currencyCodes));
         }
     }
+
+    @Nested
+    class GetAllSupportedCurrenciesTests {
+
+        @Test
+        void Should_ReturnCurrencies_When_RequestingMultipleCurrencies() {
+            // Given
+            var returnedCurrencies = List.of(
+                    new Currency("USD"),
+                    new Currency("EUR"),
+                    new Currency("GBP")
+            );
+
+            Mockito.when(swopApiClientApi.currencies())
+                    .thenReturn(returnedCurrencies);
+
+            // When
+            var currencies = exchangeRateService.getAllSupportedCurrencies();
+
+            // Then
+            var expectedReturnedCurrencies = List.of("USD", "EUR", "GBP");
+            assertEquals(expectedReturnedCurrencies, currencies);
+        }
+
+        @Test
+        void Should_ThrowIntegrationException_When_ExternalIntegrationFails() {
+            // Given
+            Mockito.when(swopApiClientApi.currencies())
+                    .thenThrow(new GraphQLClientException("errors from service", List.of()));
+
+            // When + Then
+            assertThrows(ExchangeRateIntegrationException.class,
+                    () -> exchangeRateService.getAllSupportedCurrencies());
+        }
+    }
 }

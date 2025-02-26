@@ -16,4 +16,6 @@ public interface ExchangeRateService {
     );
 
     List<String> getCurrencies(List<String> currencyCodes);
+
+    List<String> getAllSupportedCurrencies();
 }

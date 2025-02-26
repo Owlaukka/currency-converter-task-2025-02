@@ -59,6 +59,13 @@ public class SwopExchangeRateIntegrationServiceImpl implements ExchangeRateServi
                 .toList();
     }
 
+    @Override
+    public List<String> getAllSupportedCurrencies() {
+        return getAllCurrenciesFromSwop()
+                .stream().map(Currency::code)
+                .toList();
+    }
+
     private List<Rate> getRatesFromSwop(String sourceCurrency, String targetCurrency) throws ExchangeRateIntegrationException {
         try {
             return swopApiClientApi.latest(List.of(sourceCurrency, targetCurrency));
@@ -73,7 +80,16 @@ public class SwopExchangeRateIntegrationServiceImpl implements ExchangeRateServi
             return swopApiClientApi.currencies(currencyCodes);
         } catch (GraphQLClientException e) {
             // TODO: look at the exception and decide if it's a bad request or something else
-            throw new ExchangeRateIntegrationException("Failed to get exchange rates", e);
+            throw new ExchangeRateIntegrationException("Failed to get supported currencies for codes: " + currencyCodes, e);
+        }
+    }
+
+    private List<Currency> getAllCurrenciesFromSwop() {
+        try {
+            return swopApiClientApi.currencies();
+        } catch (GraphQLClientException e) {
+            // TODO: look at the exception and decide if it's a bad request or something else
+            throw new ExchangeRateIntegrationException("Failed to get all supported currencies from Swop", e);
         }
     }
 }
