@@ -1,17 +1,34 @@
 package me.owlaukka;
 
+import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
+import me.owlaukka.currencyconversion.ConversionResult;
+import me.owlaukka.currencyconversion.CurrencyConversionService;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 
 @QuarkusTest
 class CurrencyConversionResourceTest {
 
+    @InjectMock
+    CurrencyConversionService currencyConversionService;
+
     @Test
     void basicConversion() {
+        var conversionResult = new ConversionResult(new BigDecimal("85.00"), LocalDate.now());
+
+        Mockito.when(currencyConversionService.convert("USD", "EUR", new BigDecimal("100.50")))
+                .thenReturn(conversionResult);
+
         given()
             .when()
             .queryParam("sourceCurrency", "USD")
@@ -20,8 +37,8 @@ class CurrencyConversionResourceTest {
             .get("/conversion")
             .then()
             .statusCode(200)
-            .body("convertedAmount", notNullValue())
-            .body("date", notNullValue());
+                .body("convertedAmount", equalTo(conversionResult.convertedAmount().floatValue()))
+                .body("date", equalTo(conversionResult.date().toString()));
     }
 
     @Test

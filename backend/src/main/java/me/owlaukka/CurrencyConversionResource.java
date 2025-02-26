@@ -1,30 +1,35 @@
 package me.owlaukka;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 import me.owlaukka.api.ConversionApi;
+import me.owlaukka.currencyconversion.CurrencyConversionService;
 import me.owlaukka.model.ConversionResponse;
 import me.owlaukka.model.Error;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
 
 @ApplicationScoped
 public class CurrencyConversionResource implements ConversionApi {
+
+    @Inject
+    CurrencyConversionService currencyConversionService;
 
     @Override
     public Response convertCurrency(
         String sourceCurrency,
         String targetCurrency,
-        Double amount
+        BigDecimal amount
     ) {
-        // TODO: Implement the actual currency conversion using swop.cx API
-        // For now, return a mock response
+        var conversion = currencyConversionService.convert(sourceCurrency, targetCurrency, amount);
+
         ConversionResponse response = new ConversionResponse()
-            .convertedAmount(amount * 0.85) // Mock conversion rate
-            .date(LocalDate.now());
+                .convertedAmount(conversion.convertedAmount())
+                .date(conversion.date());
 
         return Response.ok(response).build();
     }
