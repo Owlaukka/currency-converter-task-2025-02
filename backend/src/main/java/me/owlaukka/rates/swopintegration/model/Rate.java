@@ -18,5 +18,8 @@ public record Rate(String baseCurrency, String quoteCurrency, BigDecimal quote, 
         if (baseCurrency == null || quoteCurrency == null || quote == null || date == null) {
             throw new ExchangeRateIntegrationException("Rate-response from Swop API is missing required fields");
         }
+        if (quote.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new ExchangeRateIntegrationException("Rate-response from Swop API has a zero or non-positive rate");
+        }
     }
 }

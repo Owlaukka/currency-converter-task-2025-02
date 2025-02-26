@@ -17,8 +17,6 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
 
     /**
      * Converts an amount from one currency to another.
-     * <p>
-     * TODO: add error-case handling
      *
      * @param sourceCurrency The ISO 4217 currency code of the source currency
      * @param targetCurrency The ISO 4217 currency code of the target currency
