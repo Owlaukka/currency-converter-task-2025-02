@@ -8,5 +8,8 @@ public interface ExchangeRateService {
      * @param targetCurrency The ISO 4217 currency code of the target currency
      * @return The exchange rate from EUR to another currency
      */
-    EuroRatesForSourceAndTargetCurrency getEuroRatesForSourceAndTargetCurrency(String sourceCurrency, String targetCurrency);
+    EuroRatesForSourceAndTargetCurrency getEuroRatesForSourceAndTargetCurrency(
+            String sourceCurrency,
+            String targetCurrency
+    );
 }

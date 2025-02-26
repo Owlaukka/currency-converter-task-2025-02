@@ -1,4 +1,4 @@
-package me.owlaukka;
+package me.owlaukka.api;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -6,7 +6,6 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
-import me.owlaukka.api.ConversionApi;
 import me.owlaukka.currencyconversion.CurrencyConversionService;
 import me.owlaukka.model.ConversionResponse;
 import me.owlaukka.model.Error;
@@ -21,9 +20,9 @@ public class CurrencyConversionResource implements ConversionApi {
 
     @Override
     public Response convertCurrency(
-        String sourceCurrency,
-        String targetCurrency,
-        BigDecimal amount
+            String sourceCurrency,
+            String targetCurrency,
+            BigDecimal amount
     ) {
         var conversion = currencyConversionService.convert(sourceCurrency, targetCurrency, amount);
 
@@ -39,11 +38,11 @@ public class CurrencyConversionResource implements ConversionApi {
         @Override
         public Response toResponse(ConstraintViolationException e) {
             Error error = new Error()
-                .code("VALIDATION_ERROR")
-                .message("Invalid input parameters: " + e.getMessage());
+                    .code("VALIDATION_ERROR")
+                    .message("Invalid input parameters: " + e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST)
-                .entity(error)
-                .build();
+                    .entity(error)
+                    .build();
         }
     }
 }

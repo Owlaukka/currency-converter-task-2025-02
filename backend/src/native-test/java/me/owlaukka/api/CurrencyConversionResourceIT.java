@@ -1,4 +1,4 @@
-package me.owlaukka;
+package me.owlaukka.api;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 
