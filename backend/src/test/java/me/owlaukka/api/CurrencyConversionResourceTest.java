@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.containsStringIgnoringCase;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -95,6 +96,20 @@ class CurrencyConversionResourceTest {
                 .statusCode(400)
                 .body("code", equalTo("VALIDATION_ERROR"))
                 .body("message", equalTo("Invalid input parameters: convertCurrency.amount: must not be null"));
+    }
+
+    @Test
+    void Should_Return400Error_When_CurrencyCodeIsInvalid() {
+        given()
+                .when()
+                .queryParam("sourceCurrency", "USDA")
+                .queryParam("targetCurrency", "G")
+                .get("/conversion")
+                .then()
+                .statusCode(400)
+                .body("code", equalTo("VALIDATION_ERROR"))
+                .body("message", containsStringIgnoringCase("sourceCurrency: size must be between 3 and 3"))
+                .body("message", containsStringIgnoringCase("targetCurrency: size must be between 3 and 3"));
     }
 
     @Test
