@@ -1,10 +1,12 @@
-package me.owlaukka.rates;
+package me.owlaukka.rates.swopintegration;
 
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.graphql.client.GraphQLClientException;
 import jakarta.inject.Inject;
-import me.owlaukka.rates.swopintegration.SwopApiClientApi;
+import me.owlaukka.rates.EuroExchangeRate;
+import me.owlaukka.rates.EuroRatesForSourceAndTargetCurrency;
+import me.owlaukka.rates.ExchangeRateIntegrationException;
 import me.owlaukka.rates.swopintegration.model.Rate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,10 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @QuarkusTest
-class ExchangeRateServiceImplTest {
+class SwopExchangeRateIntegrationServiceImplTest {
 
     @Inject
-    ExchangeRateServiceImpl exchangeRateService;
+    SwopExchangeRateIntegrationServiceImpl exchangeRateService;
 
     @InjectMock
     private SwopApiClientApi swopApiClientApi;
@@ -90,6 +92,24 @@ class ExchangeRateServiceImplTest {
 
         Mockito.when(swopApiClientApi.latest(List.of(sourceCurrency, targetCurrency)))
                 .thenThrow(new GraphQLClientException("errors from service", List.of()));
+
+        // When + Then
+        assertThrows(ExchangeRateIntegrationException.class,
+                () -> exchangeRateService.getEuroRatesForSourceAndTargetCurrency(sourceCurrency, targetCurrency));
+    }
+
+    @Test
+    void Should_ThrowIntegrationException_When_SwopResponseDoesNotContainRequestedInformation() {
+        // Given
+        var returnedRates = List.of(
+                new Rate("EUR", "AGF", new BigDecimal("1.0423"), LocalDate.parse("2025-01-30")),
+                new Rate("EUR", "WER", new BigDecimal("54.58345"), LocalDate.parse("2025-02-04"))
+        );
+        String sourceCurrency = "USD";
+        String targetCurrency = "CHF";
+
+        Mockito.when(swopApiClientApi.latest(List.of(sourceCurrency, targetCurrency)))
+                .thenReturn(returnedRates);
 
         // When + Then
         assertThrows(ExchangeRateIntegrationException.class,
