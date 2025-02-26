@@ -1,4 +1,7 @@
 package me.owlaukka.rates;
 
-public record EuroRatesForSourceAndTargetCurrency(EuroExchangeRate sourceRate, EuroExchangeRate targetRate) {
+import java.time.LocalDate;
+
+public record EuroRatesForSourceAndTargetCurrency(EuroExchangeRate sourceRate, EuroExchangeRate targetRate,
+                                                  LocalDate dateOfRates) {
 }

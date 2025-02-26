@@ -34,8 +34,8 @@ class ExchangeRateServiceImplTest {
     void Should_ReturnExchangeRates_When_RequestingRatesForNonEURCurrencies() {
         // Given
         var returnedRates = List.of(
-                new Rate("EUR", "USD", new BigDecimal("1.0423"), LocalDate.now()),
-                new Rate("EUR", "CHF", new BigDecimal("54.58345"), LocalDate.now())
+                new Rate("EUR", "USD", new BigDecimal("1.0423"), LocalDate.parse("2025-01-30")),
+                new Rate("EUR", "CHF", new BigDecimal("54.58345"), LocalDate.parse("2025-02-04"))
         );
         String sourceCurrency = "USD";
         String targetCurrency = "CHF";
@@ -49,7 +49,8 @@ class ExchangeRateServiceImplTest {
         // Then
         var expectedRates = new EuroRatesForSourceAndTargetCurrency(
                 new EuroExchangeRate("USD", new BigDecimal("1.0423")),
-                new EuroExchangeRate("CHF", new BigDecimal("54.58345"))
+                new EuroExchangeRate("CHF", new BigDecimal("54.58345")),
+                LocalDate.parse("2025-01-30")
         );
         assertEquals(expectedRates, rates);
     }
@@ -58,8 +59,8 @@ class ExchangeRateServiceImplTest {
     void Should_ReturnExchangeRates_When_ReceivedCurrenciesAreInADifferentOrder() {
         // Given
         var returnedRates = List.of(
-                new Rate("EUR", "GBP", new BigDecimal("5"), LocalDate.now()),
-                new Rate("EUR", "SGD", new BigDecimal("1.000012"), LocalDate.now())
+                new Rate("EUR", "GBP", new BigDecimal("5"), LocalDate.parse("2025-02-10")),
+                new Rate("EUR", "SGD", new BigDecimal("1.000012"), LocalDate.parse("2025-02-04"))
         );
         String sourceCurrency = "SGD";
         String targetCurrency = "GBP";
@@ -73,7 +74,8 @@ class ExchangeRateServiceImplTest {
         // Then
         var expectedRates = new EuroRatesForSourceAndTargetCurrency(
                 new EuroExchangeRate("SGD", new BigDecimal("1.000012")),
-                new EuroExchangeRate("GBP", new BigDecimal("5"))
+                new EuroExchangeRate("GBP", new BigDecimal("5")),
+                LocalDate.parse("2025-02-04")
         );
         assertEquals(expectedRates, rates);
     }
