@@ -47,7 +47,7 @@ tasks.withType<JavaCompile> {
 openApiGenerate {
     generatorName.set("jaxrs-spec")
     inputSpec.set("$projectDir/src/main/resources/openapi/api.yaml")
-    outputDir.set("${layout.buildDirectory}/generated")
+    outputDir.set("${layout.buildDirectory.get()}/generated")
     apiPackage.set("me.owlaukka.api")
     modelPackage.set("me.owlaukka.model")
     typeMappings.set(mapOf(
@@ -73,7 +73,7 @@ openApiGenerate {
 sourceSets {
     main {
         java {
-            srcDir("${layout.buildDirectory}/generated/src/gen/java")
+            srcDir("${layout.buildDirectory.get()}/generated/src/gen/java")
         }
     }
 }
