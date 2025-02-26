@@ -3,7 +3,6 @@ package me.owlaukka.rates;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import me.owlaukka.common.Pair;
 import me.owlaukka.rates.swopintegration.SwopApiClientApi;
 import me.owlaukka.rates.swopintegration.model.Rate;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,7 +47,7 @@ class ExchangeRateServiceImplTest {
         var rates = exchangeRateService.getEuroRatesForSourceAndTargetCurrency(sourceCurrency, targetCurrency);
 
         // Then
-        var expectedRates = new Pair<>(
+        var expectedRates = new EuroRatesForSourceAndTargetCurrency(
                 new EuroExchangeRate("USD", new BigDecimal("1.0423")),
                 new EuroExchangeRate("CHF", new BigDecimal("54.58345"))
         );
@@ -72,7 +71,7 @@ class ExchangeRateServiceImplTest {
         var rates = exchangeRateService.getEuroRatesForSourceAndTargetCurrency(sourceCurrency, targetCurrency);
 
         // Then
-        var expectedRates = new Pair<>(
+        var expectedRates = new EuroRatesForSourceAndTargetCurrency(
                 new EuroExchangeRate("SGD", new BigDecimal("1.000012")),
                 new EuroExchangeRate("GBP", new BigDecimal("5"))
         );

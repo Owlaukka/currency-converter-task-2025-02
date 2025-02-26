@@ -1,7 +1,6 @@
 package me.owlaukka.rates;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import me.owlaukka.common.Pair;
 import me.owlaukka.rates.swopintegration.SwopApiClientApi;
 
 import java.util.List;
@@ -17,7 +16,7 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
     // TODO: handle error-cases more gracefully; returned list does not contain source or target, API throws
     // TODO: replace Pair with a more descriptive class
     @Override
-    public Pair<EuroExchangeRate, EuroExchangeRate> getEuroRatesForSourceAndTargetCurrency(String sourceCurrency, String targetCurrency) {
+    public EuroRatesForSourceAndTargetCurrency getEuroRatesForSourceAndTargetCurrency(String sourceCurrency, String targetCurrency) {
         var rates = swopApiClientApi.latest(List.of(sourceCurrency, targetCurrency));
         var sourceRate = rates.stream()
                 .filter(r -> r.quoteCurrency().equals(sourceCurrency))
@@ -32,6 +31,6 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
         var sourceEuroRate = new EuroExchangeRate(sourceCurrency, sourceRate.quote());
         var targetEuroRate = new EuroExchangeRate(targetCurrency, targetRate.quote());
 
-        return new Pair<>(sourceEuroRate, targetEuroRate);
+        return new EuroRatesForSourceAndTargetCurrency(sourceEuroRate, targetEuroRate);
     }
 }
