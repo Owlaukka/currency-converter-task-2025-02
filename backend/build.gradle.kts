@@ -22,8 +22,10 @@ dependencies {
     implementation("io.quarkus:quarkus-rest-jackson")
     implementation("io.quarkus:quarkus-hibernate-validator")
     implementation("jakarta.validation:jakarta.validation-api:3.0.2")
+    implementation("io.quarkus:quarkus-smallrye-graphql-client")
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.rest-assured:rest-assured")
+    testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:2.35.1")
 }
 
 group = "me.owlaukka"
@@ -45,9 +47,12 @@ tasks.withType<JavaCompile> {
 openApiGenerate {
     generatorName.set("jaxrs-spec")
     inputSpec.set("$projectDir/src/main/resources/openapi/api.yaml")
-    outputDir.set("$buildDir/generated")
+    outputDir.set("${layout.buildDirectory}/generated")
     apiPackage.set("me.owlaukka.api")
     modelPackage.set("me.owlaukka.model")
+    typeMappings.set(mapOf(
+        "decimal" to "java.math.BigDecimal"
+    ))
     configOptions.set(mapOf(
         "interfaceOnly" to "true",
         "returnResponse" to "true",
@@ -60,14 +65,15 @@ openApiGenerate {
         "skipDefaultInterface" to "true",
         "generateApiTests" to "false",
         "generateApiDocumentation" to "false",
-        "generateSupportingFiles" to "false"
+        "generateSupportingFiles" to "false",
+        "legacyTypeResolving" to "true"
     ))
 }
 
 sourceSets {
     main {
         java {
-            srcDir("${buildDir}/generated/src/gen/java")
+            srcDir("${layout.buildDirectory}/generated/src/gen/java")
         }
     }
 }
