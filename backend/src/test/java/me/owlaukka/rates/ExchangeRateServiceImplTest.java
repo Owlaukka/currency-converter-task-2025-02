@@ -2,6 +2,7 @@ package me.owlaukka.rates;
 
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
+import io.smallrye.graphql.client.GraphQLClientException;
 import jakarta.inject.Inject;
 import me.owlaukka.rates.swopintegration.SwopApiClientApi;
 import me.owlaukka.rates.swopintegration.model.Rate;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @QuarkusTest
 class ExchangeRateServiceImplTest {
@@ -78,5 +80,19 @@ class ExchangeRateServiceImplTest {
                 LocalDate.parse("2025-02-04")
         );
         assertEquals(expectedRates, rates);
+    }
+
+    @Test
+    void Should_ThrowIntegrationException_When_ExternalIntegrationFails() {
+        // Given
+        String sourceCurrency = "SGD";
+        String targetCurrency = "GBP";
+
+        Mockito.when(swopApiClientApi.latest(List.of(sourceCurrency, targetCurrency)))
+                .thenThrow(new GraphQLClientException("errors from service", List.of()));
+
+        // When + Then
+        assertThrows(ExchangeRateIntegrationException.class,
+                () -> exchangeRateService.getEuroRatesForSourceAndTargetCurrency(sourceCurrency, targetCurrency));
     }
 }
