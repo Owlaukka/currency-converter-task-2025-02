@@ -35,10 +35,10 @@ paths:
           required: true
           description: Amount to convert in the source currency (must be positive)
           schema:
-            type: number
-            format: double
+            type: string
+            format: decimal
             minimum: 0.01
-            example: 100.50
+            example: "100.50"
       responses:
         "200":
           description: Successful conversion
@@ -79,9 +79,9 @@ components:
       type: object
       properties:
         convertedAmount:
-          type: number
-          format: double
-          example: 91.25
+          type: string
+          format: decimal
+          example: "91.25"
           description: The converted amount in the target currency
         date:
           type: string
