@@ -4,6 +4,7 @@ import io.smallrye.graphql.client.GraphQLClientException;
 import jakarta.enterprise.context.ApplicationScoped;
 import me.owlaukka.rates.EuroExchangeRate;
 import me.owlaukka.rates.EuroRatesForSourceAndTargetCurrency;
+import me.owlaukka.rates.ExchangeRateIntegrationBadRequestException;
 import me.owlaukka.rates.ExchangeRateIntegrationException;
 import me.owlaukka.rates.ExchangeRateService;
 import me.owlaukka.rates.swopintegration.model.Rate;
@@ -22,7 +23,10 @@ public class SwopExchangeRateIntegrationServiceImpl implements ExchangeRateServi
         return rates.stream()
                 .filter(r -> r.quoteCurrency().equals(currencyCode))
                 .findFirst()
-                .orElseThrow(() -> new ExchangeRateIntegrationException("Did not find requested rate for '" + currencyCode + "' in the response from integration"));
+                .orElseThrow(() ->
+                        new ExchangeRateIntegrationBadRequestException(
+                                "Given currency code '" + currencyCode + "' not found from Swop"
+                        ));
     }
 
     @Override
@@ -51,6 +55,7 @@ public class SwopExchangeRateIntegrationServiceImpl implements ExchangeRateServi
         try {
             return swopApiClientApi.latest(List.of(sourceCurrency, targetCurrency));
         } catch (GraphQLClientException e) {
+            // TODO: look at the exception and decide if it's a bad request or something else
             throw new ExchangeRateIntegrationException("Failed to get exchange rates", e);
         }
     }

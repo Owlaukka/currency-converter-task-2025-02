@@ -6,6 +6,7 @@ import io.smallrye.graphql.client.GraphQLClientException;
 import jakarta.inject.Inject;
 import me.owlaukka.rates.EuroExchangeRate;
 import me.owlaukka.rates.EuroRatesForSourceAndTargetCurrency;
+import me.owlaukka.rates.ExchangeRateIntegrationBadRequestException;
 import me.owlaukka.rates.ExchangeRateIntegrationException;
 import me.owlaukka.rates.swopintegration.model.Rate;
 import org.junit.jupiter.api.BeforeEach;
@@ -112,7 +113,7 @@ class SwopExchangeRateIntegrationServiceImplTest {
                 .thenReturn(returnedRates);
 
         // When + Then
-        assertThrows(ExchangeRateIntegrationException.class,
+        assertThrows(ExchangeRateIntegrationBadRequestException.class,
                 () -> exchangeRateService.getEuroRatesForSourceAndTargetCurrency(sourceCurrency, targetCurrency));
     }
 

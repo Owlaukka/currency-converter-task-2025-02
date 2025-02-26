@@ -5,6 +5,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.core.Response;
 import me.owlaukka.currencyconversion.ConversionResult;
 import me.owlaukka.currencyconversion.CurrencyConversionService;
+import me.owlaukka.rates.ExchangeRateIntegrationBadRequestException;
 import me.owlaukka.rates.ExchangeRateIntegrationException;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -78,6 +79,22 @@ class CurrencyConversionResourceTest {
     }
 
     @Test
+    void Should_Return400Error_When_ExternalIntegrationComplainsBadRequest() {
+        Mockito.when(currencyConversionService.convert(Mockito.anyString(), Mockito.anyString(), Mockito.any(BigDecimal.class)))
+                .thenThrow(new ExchangeRateIntegrationBadRequestException("Bad Request to Swop"));
+        given()
+                .when()
+                .queryParam("sourceCurrency", "USD")
+                .queryParam("targetCurrency", "GBP")
+                .queryParam("amount", "123")
+                .get("/conversion")
+                .then()
+                .statusCode(400)
+                .body("code", equalTo(Response.Status.BAD_REQUEST.name()))
+                .body("message", equalTo("Bad request to exchange rate integration"));
+    }
+
+    @Test
     void Should_Return400Error_When_NoSourceCurrencyIsNotGiven() {
         given()
                 .when()
@@ -128,6 +145,20 @@ class CurrencyConversionResourceTest {
                 .body("code", equalTo("VALIDATION_ERROR"))
                 .body("message", containsStringIgnoringCase("sourceCurrency: size must be between 3 and 3"))
                 .body("message", containsStringIgnoringCase("targetCurrency: size must be between 3 and 3"));
+    }
+
+    @Test
+    void Should_Return404Error_When_RequestingUnknownRoute() {
+        given()
+                .when()
+                .queryParam("sourceCurrency", "USD")
+                .queryParam("targetCurrency", "GBP")
+                .queryParam("amount", "100.50")
+                .get("/wrong-path")
+                .then()
+                .statusCode(404)
+                .body("code", equalTo("NOT_FOUND"))
+                .body("message", containsStringIgnoringCase("Resource not found"));
     }
 
     @Test
