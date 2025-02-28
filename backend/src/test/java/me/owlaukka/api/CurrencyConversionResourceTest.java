@@ -7,6 +7,7 @@ import me.owlaukka.currencyconversion.ConversionResult;
 import me.owlaukka.currencyconversion.CurrencyConversionService;
 import me.owlaukka.rates.exceptions.ExchangeRateIntegrationBadRequestException;
 import me.owlaukka.rates.exceptions.ExchangeRateIntegrationException;
+import me.owlaukka.rates.exceptions.ExchangeRateIntegrationInvalidResponseException;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -95,6 +96,22 @@ class CurrencyConversionResourceTest {
                 .statusCode(400)
                 .body("code", equalTo(Response.Status.BAD_REQUEST.name()))
                 .body("message", equalTo("Bad request to exchange rate integration"));
+    }
+
+    @Test
+    void Should_Return400Error_When_ExternalIntegrationReturnsInvalidResponse() {
+        Mockito.when(currencyConversionService.convert(Mockito.anyString(), Mockito.anyString(), Mockito.any(BigDecimal.class)))
+                .thenThrow(new ExchangeRateIntegrationInvalidResponseException("Invalid response from Swop"));
+        given()
+                .when()
+                .queryParam("sourceCurrency", "USD")
+                .queryParam("targetCurrency", "GBP")
+                .queryParam("amount", "123")
+                .get("/conversion")
+                .then()
+                .statusCode(503)
+                .body("code", equalTo(Response.Status.SERVICE_UNAVAILABLE.name()))
+                .body("message", equalTo("Service temporarily unavailable"));
     }
 
     @Test

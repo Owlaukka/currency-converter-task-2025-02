@@ -7,8 +7,13 @@ import me.owlaukka.rates.EuroRatesForSourceAndTargetCurrency;
 import me.owlaukka.rates.ExchangeRateService;
 import me.owlaukka.rates.exceptions.ExchangeRateIntegrationBadRequestException;
 import me.owlaukka.rates.exceptions.ExchangeRateIntegrationException;
+import me.owlaukka.rates.exceptions.ExchangeRateIntegrationInvalidResponseException;
 import me.owlaukka.rates.swopintegration.model.Currency;
 import me.owlaukka.rates.swopintegration.model.Rate;
+import org.eclipse.microprofile.faulttolerance.Bulkhead;
+import org.eclipse.microprofile.faulttolerance.CircuitBreaker;
+import org.eclipse.microprofile.faulttolerance.Retry;
+import org.eclipse.microprofile.faulttolerance.Timeout;
 
 import java.util.List;
 
@@ -30,7 +35,25 @@ public class SwopExchangeRateIntegrationServiceImpl implements ExchangeRateServi
                         ));
     }
 
+    /**
+     * Retrieves the latest exchange rates from EUR to a given list of quote currencies.
+     * <p>
+     * <li>Supports maximum 10 concurrent calls to the external API (bulkhead).</li>
+     * <li>Will stop allowing requests for 5 seconds when half of 6 requests fail (circuit breaker).</li>
+     * <li>Will timeout after 5 seconds.</li>
+     * <li>Will retry once with a 1 second delay if the request fails. This should be tweaked to only
+     * retry on certain exceptions.</li>
+     *
+     * @param sourceCurrency The ISO 4217 currency code of the source currency
+     * @param targetCurrency The ISO 4217 currency code of the target currency
+     * @return The exchange rate from EUR to given currencies
+     * @throws ExchangeRateIntegrationException If the request fails to Swop
+     */
     @Override
+    @Bulkhead
+    @CircuitBreaker(requestVolumeThreshold = 6, skipOn = ExchangeRateIntegrationInvalidResponseException.class)
+    @Timeout(5000)
+    @Retry(maxRetries = 1, delay = 1000, abortOn = ExchangeRateIntegrationInvalidResponseException.class)
     public EuroRatesForSourceAndTargetCurrency getEuroRatesForSourceAndTargetCurrency(
             String sourceCurrency,
             String targetCurrency
@@ -45,7 +68,7 @@ public class SwopExchangeRateIntegrationServiceImpl implements ExchangeRateServi
         var targetEuroRate = new EuroExchangeRate(targetRate.quoteCurrency(), targetRate.quote());
 
         if (!sourceRate.date().equals(targetRate.date())) {
-            throw new ExchangeRateIntegrationException("Dates of rates from Swop are different");
+            throw new ExchangeRateIntegrationInvalidResponseException("Dates of rates from Swop are different");
         }
         var dateOfRates = sourceRate.date();
 
@@ -53,6 +76,10 @@ public class SwopExchangeRateIntegrationServiceImpl implements ExchangeRateServi
     }
 
     @Override
+    @Bulkhead
+    @CircuitBreaker(requestVolumeThreshold = 6)
+    @Timeout(5000)
+    @Retry(maxRetries = 1, delay = 1000)
     public List<String> getCurrencies(List<String> currencyCodes) {
         return getCurrenciesFromSwop(currencyCodes)
                 .stream().map(Currency::code)
@@ -60,6 +87,10 @@ public class SwopExchangeRateIntegrationServiceImpl implements ExchangeRateServi
     }
 
     @Override
+    @Bulkhead
+    @CircuitBreaker(requestVolumeThreshold = 6)
+    @Timeout(5000)
+    @Retry(maxRetries = 1, delay = 1000)
     public List<String> getAllSupportedCurrencies() {
         return getAllCurrenciesFromSwop()
                 .stream().map(Currency::code)
