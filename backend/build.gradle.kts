@@ -23,6 +23,7 @@ dependencies {
     implementation("io.quarkus:quarkus-hibernate-validator")
     implementation("jakarta.validation:jakarta.validation-api:3.0.2")
     implementation("io.quarkus:quarkus-smallrye-graphql-client")
+    implementation("io.quarkus:quarkus-smallrye-fault-tolerance")
 
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.quarkus:quarkus-junit5-mockito")
