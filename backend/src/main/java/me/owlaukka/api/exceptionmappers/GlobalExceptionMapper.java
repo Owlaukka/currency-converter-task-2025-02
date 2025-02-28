@@ -1,4 +1,4 @@
-package me.owlaukka.api.exceptions.exceptionmappers;
+package me.owlaukka.api.exceptionmappers;
 
 import jakarta.annotation.Priority;
 import jakarta.ws.rs.core.MediaType;
@@ -12,6 +12,8 @@ import me.owlaukka.model.Error;
 public class GlobalExceptionMapper implements ExceptionMapper<RuntimeException> {
     @Override
     public Response toResponse(RuntimeException exception) {
+        System.out.println("exception.getClass().getName() = " + exception.getClass().getName());
+        System.out.println("exception.getMessage() = " + exception.getMessage());
         var error = new Error().code(Response.Status.INTERNAL_SERVER_ERROR.name()).message("Something went wrong");
 
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

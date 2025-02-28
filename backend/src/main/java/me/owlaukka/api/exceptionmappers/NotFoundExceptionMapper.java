@@ -1,4 +1,4 @@
-package me.owlaukka.api.exceptions.exceptionmappers;
+package me.owlaukka.api.exceptionmappers;
 
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.MediaType;
