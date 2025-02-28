@@ -1,5 +1,6 @@
 package me.owlaukka.rates.swopintegration;
 
+import io.quarkus.cache.CacheManager;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.smallrye.graphql.client.GraphQLClientException;
@@ -10,6 +11,7 @@ import me.owlaukka.rates.exceptions.ExchangeRateIntegrationBadRequestException;
 import me.owlaukka.rates.exceptions.ExchangeRateIntegrationException;
 import me.owlaukka.rates.swopintegration.model.Currency;
 import me.owlaukka.rates.swopintegration.model.Rate;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -29,6 +31,15 @@ class SwopExchangeRateIntegrationServiceImplTest {
 
     @InjectMock
     private SwopApiClientApi swopApiClientApi;
+
+    @Inject
+    CacheManager cacheManager;
+
+    @BeforeEach
+    void clearCache() {
+        cacheManager.getCache("all-currencies").get().invalidateAll().await().indefinitely();
+        cacheManager.getCache("currencies").get().invalidateAll().await().indefinitely();
+    }
 
     @Nested
     class FindRateFromResponseTests {
@@ -164,6 +175,31 @@ class SwopExchangeRateIntegrationServiceImplTest {
         }
 
         @Test
+        void Should_ReturnCurrenciesFromCache_When_RequestingSameCurrenciesMultipleTimes() {
+            // Given
+            var currencyCodes = List.of("USD", "CHF", "GBP");
+            var returnedCurrencies = List.of(
+                    new Currency("USD"),
+                    new Currency("CHF"),
+                    new Currency("GBP")
+            );
+
+            Mockito.when(swopApiClientApi.currencies(currencyCodes))
+                    .thenReturn(returnedCurrencies);
+
+            // When
+            // Called twice
+            exchangeRateService.getCurrencies(currencyCodes);
+            var currencies = exchangeRateService.getCurrencies(currencyCodes);
+
+            // Then
+            var expectedReturnedCurrencies = List.of("USD", "CHF", "GBP");
+            assertEquals(expectedReturnedCurrencies, currencies);
+
+            Mockito.verify(swopApiClientApi, Mockito.times(1)).currencies(currencyCodes);
+        }
+
+        @Test
         void Should_ThrowIntegrationException_When_ExternalIntegrationFails() {
             // Given
             var currencyCodes = List.of("USD", "CHF", "GBP");
@@ -198,6 +234,30 @@ class SwopExchangeRateIntegrationServiceImplTest {
             // Then
             var expectedReturnedCurrencies = List.of("USD", "EUR", "GBP");
             assertEquals(expectedReturnedCurrencies, currencies);
+        }
+
+        @Test
+        void Should_ReturnCurrenciesFromCache_When_RequestingSameCurrenciesMultipleTimes() {
+            // Given
+            var returnedCurrencies = List.of(
+                    new Currency("USD"),
+                    new Currency("CHF"),
+                    new Currency("GBP")
+            );
+
+            Mockito.when(swopApiClientApi.currencies())
+                    .thenReturn(returnedCurrencies);
+
+            // When
+            // Called twice
+            exchangeRateService.getAllSupportedCurrencies();
+            var currencies = exchangeRateService.getAllSupportedCurrencies();
+
+            // Then
+            var expectedReturnedCurrencies = List.of("USD", "CHF", "GBP");
+            assertEquals(expectedReturnedCurrencies, currencies);
+
+            Mockito.verify(swopApiClientApi, Mockito.times(1)).currencies();
         }
 
         @Test

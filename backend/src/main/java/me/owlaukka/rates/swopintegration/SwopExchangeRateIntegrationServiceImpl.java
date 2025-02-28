@@ -1,5 +1,6 @@
 package me.owlaukka.rates.swopintegration;
 
+import io.quarkus.cache.CacheResult;
 import io.smallrye.graphql.client.GraphQLClientException;
 import jakarta.enterprise.context.ApplicationScoped;
 import me.owlaukka.rates.EuroExchangeRate;
@@ -80,6 +81,8 @@ public class SwopExchangeRateIntegrationServiceImpl implements ExchangeRateServi
     @CircuitBreaker(requestVolumeThreshold = 6)
     @Timeout(5000)
     @Retry(maxRetries = 1, delay = 1000)
+    @CacheResult(cacheName = "currencies")
+    // TODO: maybe make this a boolean method and return true if all currencies were found?
     public List<String> getCurrencies(List<String> currencyCodes) {
         return getCurrenciesFromSwop(currencyCodes)
                 .stream().map(Currency::code)
@@ -91,6 +94,7 @@ public class SwopExchangeRateIntegrationServiceImpl implements ExchangeRateServi
     @CircuitBreaker(requestVolumeThreshold = 6)
     @Timeout(5000)
     @Retry(maxRetries = 1, delay = 1000)
+    @CacheResult(cacheName = "all-currencies")
     public List<String> getAllSupportedCurrencies() {
         return getAllCurrenciesFromSwop()
                 .stream().map(Currency::code)
