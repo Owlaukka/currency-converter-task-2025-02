@@ -55,6 +55,7 @@ public class SwopExchangeRateIntegrationServiceImpl implements ExchangeRateServi
     @CircuitBreaker(requestVolumeThreshold = 6, skipOn = ExchangeRateIntegrationInvalidResponseException.class)
     @Timeout(5000)
     @Retry(maxRetries = 1, delay = 1000, abortOn = ExchangeRateIntegrationInvalidResponseException.class)
+    @CacheResult(cacheName = "rates")
     public EuroRatesForSourceAndTargetCurrency getEuroRatesForSourceAndTargetCurrency(
             String sourceCurrency,
             String targetCurrency

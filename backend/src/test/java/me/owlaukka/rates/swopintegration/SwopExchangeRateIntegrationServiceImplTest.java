@@ -39,6 +39,7 @@ class SwopExchangeRateIntegrationServiceImplTest {
     void clearCache() {
         cacheManager.getCache("all-currencies").get().invalidateAll().await().indefinitely();
         cacheManager.getCache("currencies").get().invalidateAll().await().indefinitely();
+        cacheManager.getCache("rates").get().invalidateAll().await().indefinitely();
     }
 
     @Nested
@@ -92,6 +93,34 @@ class SwopExchangeRateIntegrationServiceImplTest {
                     LocalDate.parse("2025-02-04")
             );
             assertEquals(expectedRates, rates);
+        }
+
+        @Test
+        void Should_ReturnExchangeRatesFromCache_When_GettingSameEuroRatesMoreThanOnce() {
+            // Given
+            var returnedRates = List.of(
+                    new Rate("EUR", "GBP", new BigDecimal("5"), LocalDate.parse("2025-02-04")),
+                    new Rate("EUR", "SGD", new BigDecimal("1.000012"), LocalDate.parse("2025-02-04"))
+            );
+            String sourceCurrency = "SGD";
+            String targetCurrency = "GBP";
+
+            Mockito.when(swopApiClientApi.latest(List.of(sourceCurrency, targetCurrency)))
+                    .thenReturn(returnedRates);
+
+            // When
+            exchangeRateService.getEuroRatesForSourceAndTargetCurrency(sourceCurrency, targetCurrency);
+            var rates = exchangeRateService.getEuroRatesForSourceAndTargetCurrency(sourceCurrency, targetCurrency);
+
+            // Then
+            var expectedRates = new EuroRatesForSourceAndTargetCurrency(
+                    new EuroExchangeRate("SGD", new BigDecimal("1.000012")),
+                    new EuroExchangeRate("GBP", new BigDecimal("5")),
+                    LocalDate.parse("2025-02-04")
+            );
+            assertEquals(expectedRates, rates);
+
+            Mockito.verify(swopApiClientApi, Mockito.times(1)).latest(List.of(sourceCurrency, targetCurrency));
         }
 
         @Test
