@@ -1,6 +1,7 @@
 import { FC } from "react";
 import CurrencyInput from "react-currency-input-field";
 import { Controller, useForm } from "react-hook-form";
+import useCurrencyConversion from "../hooks/useCurrencyConversion";
 
 interface FormValues {
   sourceCurrency: string;
@@ -16,10 +17,21 @@ interface CurrencyConversionFormProps {
 }
 
 const CurrencyConversionForm: FC<CurrencyConversionFormProps> = ({ locale }) => {
-  const { control } = useForm<FormValues>();
+  const { control, handleSubmit } = useForm<FormValues>();
+  const { convertCurrency, isLoading, error, result } = useCurrencyConversion();
+
+  const onSubmit = async (data: FormValues) => {
+    if (!data.amount) return;
+
+    await convertCurrency({
+      sourceCurrency: data.sourceCurrency,
+      targetCurrency: data.targetCurrency,
+      amount: data.amount,
+    });
+  };
 
   return (
-    <form aria-label="Currency-conversion form">
+    <form aria-label="Currency-conversion form" onSubmit={handleSubmit(onSubmit)}>
       <div>
         <label htmlFor="source-currency">Source Currency</label>
         <Controller
@@ -69,22 +81,46 @@ const CurrencyConversionForm: FC<CurrencyConversionFormProps> = ({ locale }) => 
         <Controller
           name="amount"
           control={control}
-          render={({ field }) => (
-            <CurrencyInput
-              id={field.name}
-              name={field.name}
-              value={field.value}
-              decimalScale={2}
-              allowNegativeValue={false}
-              onValueChange={(val) => {
-                field.onChange(val ?? "");
-              }}
-              formatValueOnBlur
-              intlConfig={{ locale }}
-            />
+          rules={{
+            required: "Amount is required",
+          }}
+          render={({ field, fieldState }) => (
+            <>
+              <CurrencyInput
+                id={field.name}
+                name={field.name}
+                value={field.value}
+                decimalScale={2}
+                allowNegativeValue={false}
+                onValueChange={(val) => {
+                  field.onChange(val ?? "");
+                }}
+                formatValueOnBlur
+                intlConfig={{ locale }}
+                aria-invalid={!!fieldState.error}
+              />
+              {fieldState.error && <p className="text-red-700">{fieldState.error.message}</p>}
+            </>
           )}
         />
       </div>
+
+      <button type="submit" disabled={isLoading}>
+        {isLoading ? "Converting..." : "Convert"}
+      </button>
+
+      {error && (
+        <div role="alert" className="text-red-500">
+          {error}
+        </div>
+      )}
+
+      {result && (
+        <div role="status">
+          <p>Converted amount: {result.convertedAmount}</p>
+          <p>Rate date: {result.date}</p>
+        </div>
+      )}
     </form>
   );
 };

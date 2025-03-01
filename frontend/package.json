@@ -10,8 +10,8 @@
     "preview": "vite preview",
     "format": "prettier --write ./src",
     "format:check": "prettier --check ./src",
-    "test": "vitest",
-    "test:run": "vitest --run",
+    "test": "vitest --run",
+    "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
     "generate-types": "openapi-typescript ./backend-api.yaml -o ./src/types/backend-api.ts"
