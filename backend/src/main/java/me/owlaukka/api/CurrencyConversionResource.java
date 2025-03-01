@@ -28,6 +28,7 @@ public class CurrencyConversionResource implements ConversionApi {
             String amount
     ) {
         logger.info("Currency conversion request received: {} to {}, amount: {}", sourceCurrency, targetCurrency, amount);
+        // Amount is validated by Validators in the OpenAPI spec
         var parsedAmount = new BigDecimal(amount);
 
         if (parsedAmount.compareTo(BigDecimal.ZERO) <= 0) {
