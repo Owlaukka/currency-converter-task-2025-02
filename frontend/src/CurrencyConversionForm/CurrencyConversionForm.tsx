@@ -17,7 +17,9 @@ interface CurrencyConversionFormProps {
 }
 
 const CurrencyConversionForm: FC<CurrencyConversionFormProps> = ({ locale }) => {
-  const { control, handleSubmit } = useForm<FormValues>();
+  const { control, handleSubmit } = useForm<FormValues>({
+    mode: "onBlur",
+  });
   const { convertCurrency, isLoading, error, result } = useCurrencyConversion();
 
   const onSubmit = async (data: FormValues) => {
@@ -38,18 +40,29 @@ const CurrencyConversionForm: FC<CurrencyConversionFormProps> = ({ locale }) => 
           name="sourceCurrency"
           control={control}
           defaultValue=""
-          render={({ field }) => (
-            <input
-              {...field}
-              id="source-currency"
-              type="text"
-              onChange={(e) => {
-                const filteredValue = e.target.value
-                  .replace(PERMITTED_CURRENCY_CHARACTERS_REGEXP, "")
-                  .toUpperCase();
-                field.onChange(filteredValue);
-              }}
-            />
+          rules={{
+            validate: (value) => {
+              if (!value) return "Source currency is required";
+              if (value.length !== 3) return "Must be exactly 3 characters long";
+              return true;
+            },
+          }}
+          render={({ field, fieldState }) => (
+            <>
+              <input
+                {...field}
+                id="source-currency"
+                type="text"
+                onChange={(e) => {
+                  const filteredValue = e.target.value
+                    .replace(PERMITTED_CURRENCY_CHARACTERS_REGEXP, "")
+                    .toUpperCase();
+                  field.onChange(filteredValue);
+                }}
+                aria-invalid={!!fieldState.error}
+              />
+              {fieldState.error && <p className="text-red-700">{fieldState.error.message}</p>}
+            </>
           )}
         />
       </div>
@@ -60,18 +73,29 @@ const CurrencyConversionForm: FC<CurrencyConversionFormProps> = ({ locale }) => 
           name="targetCurrency"
           control={control}
           defaultValue=""
-          render={({ field }) => (
-            <input
-              {...field}
-              id="target-currency"
-              type="text"
-              onChange={(e) => {
-                const filteredValue = e.target.value
-                  .replace(PERMITTED_CURRENCY_CHARACTERS_REGEXP, "")
-                  .toUpperCase();
-                field.onChange(filteredValue);
-              }}
-            />
+          rules={{
+            validate: (value) => {
+              if (!value) return "Target currency is required";
+              if (value.length !== 3) return "Must be exactly 3 characters long";
+              return true;
+            },
+          }}
+          render={({ field, fieldState }) => (
+            <>
+              <input
+                {...field}
+                id="target-currency"
+                type="text"
+                onChange={(e) => {
+                  const filteredValue = e.target.value
+                    .replace(PERMITTED_CURRENCY_CHARACTERS_REGEXP, "")
+                    .toUpperCase();
+                  field.onChange(filteredValue);
+                }}
+                aria-invalid={!!fieldState.error}
+              />
+              {fieldState.error && <p className="text-red-700">{fieldState.error.message}</p>}
+            </>
           )}
         />
       </div>

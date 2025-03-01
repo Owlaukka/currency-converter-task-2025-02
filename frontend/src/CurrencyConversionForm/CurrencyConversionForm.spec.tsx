@@ -125,6 +125,94 @@ describe("CurrencyConversionForm", () => {
     expect(screen.getByText(/amount is required/i)).toBeInTheDocument();
   });
 
+  it("should validate source currency is non-empty and exactly 3 uppercase characters", async () => {
+    // Given
+    const user = userEvent.setup();
+    render(<CurrencyConversionForm locale="en-US" />);
+    const sourceCurrencyField = screen.getByRole("textbox", { name: /source currency/i });
+
+    // Test empty field validation
+    // Focus and blur without typing to trigger validation
+    await user.click(sourceCurrencyField);
+    await user.tab();
+
+    // Then - Check validation error for empty field
+    expect(sourceCurrencyField).toBeInvalid();
+    expect(screen.getByText(/source currency is required/i)).toBeInTheDocument();
+
+    // Test too short input (less than 3 chars)
+    await user.clear(sourceCurrencyField);
+    await user.type(sourceCurrencyField, "EU");
+    await user.tab();
+
+    // Then - Check validation error for too short input
+    expect(sourceCurrencyField).toBeInvalid();
+    expect(screen.getByText(/must be exactly 3 characters/i)).toBeInTheDocument();
+
+    // Test too long input (more than 3 chars)
+    await user.clear(sourceCurrencyField);
+    await user.type(sourceCurrencyField, "EURO");
+    await user.tab();
+
+    // Then - Check validation error for too long input
+    expect(sourceCurrencyField).toBeInvalid();
+    expect(screen.getByText(/must be exactly 3 characters/i)).toBeInTheDocument();
+
+    // Test valid input (exactly 3 chars)
+    await user.clear(sourceCurrencyField);
+    await user.type(sourceCurrencyField, "USD");
+    await user.tab();
+
+    // Then - No validation error for valid input
+    expect(sourceCurrencyField).toBeValid();
+    expect(screen.queryByText(/must be exactly 3 characters/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/source currency is required/i)).not.toBeInTheDocument();
+  });
+
+  it("should validate target currency is non-empty and exactly 3 uppercase characters", async () => {
+    // Given
+    const user = userEvent.setup();
+    render(<CurrencyConversionForm locale="en-US" />);
+    const targetCurrencyField = screen.getByRole("textbox", { name: /target currency/i });
+
+    // Test empty field validation
+    // Focus and blur without typing to trigger validation
+    await user.click(targetCurrencyField);
+    await user.tab();
+
+    // Then - Check validation error for empty field
+    expect(targetCurrencyField).toBeInvalid();
+    expect(screen.getByText(/target currency is required/i)).toBeInTheDocument();
+
+    // Test too short input (less than 3 chars)
+    await user.clear(targetCurrencyField);
+    await user.type(targetCurrencyField, "EU");
+    await user.tab();
+
+    // Then - Check validation error for too short input
+    expect(targetCurrencyField).toBeInvalid();
+    expect(screen.getByText(/must be exactly 3 characters/i)).toBeInTheDocument();
+
+    // Test too long input (more than 3 chars)
+    await user.clear(targetCurrencyField);
+    await user.type(targetCurrencyField, "EURO");
+    await user.tab();
+
+    // Then - Check validation error for too long input
+    expect(targetCurrencyField).toBeInvalid();
+    expect(screen.getByText(/must be exactly 3 characters/i)).toBeInTheDocument();
+
+    // Test valid input (exactly 3 chars)
+    await user.clear(targetCurrencyField);
+    await user.type(targetCurrencyField, "USD");
+    await user.tab();
+
+    // Then - No validation error for valid input
+    expect(targetCurrencyField).toBeValid();
+    expect(screen.queryByText(/must be exactly 3 characters/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/target currency is required/i)).not.toBeInTheDocument();
+  });
+
   it("should submit a valid form and display the conversion result", async () => {
     // Given
     const mockResponse: paths["/conversion"]["get"]["responses"]["200"]["content"]["application/json"] =
