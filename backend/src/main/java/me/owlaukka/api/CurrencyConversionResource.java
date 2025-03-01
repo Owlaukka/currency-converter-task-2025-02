@@ -7,11 +7,15 @@ import jakarta.ws.rs.core.Response;
 import me.owlaukka.currencyconversion.CurrencyConversionService;
 import me.owlaukka.model.ConversionResponse;
 import me.owlaukka.model.Error;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 
 @ApplicationScoped
 public class CurrencyConversionResource implements ConversionApi {
+
+    private static final Logger logger = LoggerFactory.getLogger(CurrencyConversionResource.class);
 
     @Inject
     CurrencyConversionService currencyConversionService;
@@ -23,9 +27,11 @@ public class CurrencyConversionResource implements ConversionApi {
             String targetCurrency,
             String amount
     ) {
+        logger.info("Currency conversion request received: {} to {}, amount: {}", sourceCurrency, targetCurrency, amount);
         var parsedAmount = new BigDecimal(amount);
 
         if (parsedAmount.compareTo(BigDecimal.ZERO) <= 0) {
+            logger.warn("Invalid amount requested for conversion: {} (must be positive)", amount);
             var error = new Error()
                     .code("VALIDATION_ERROR")
                     .message("Amount must be positive");
