@@ -8,7 +8,6 @@ If you want to learn more about Quarkus, please visit its website: <https://quar
 
 - Figure out better way to mock GQL requests
 - Add integration tests
-- Add logging
 - Docker-compose setup to mock Swop
 - Caching setup for non-local
 
