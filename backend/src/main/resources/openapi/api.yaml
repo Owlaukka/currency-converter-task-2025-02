@@ -52,7 +52,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ValidationError"
         "429":
           description: Rate limit exceeded
           content:
@@ -89,6 +89,7 @@ paths:
                   minLength: 3
                   maxLength: 3
                   pattern: "^[A-Z]{3}$"
+                  nullable: false
                 example: [ "USD", "EUR", "GBP", "JPY" ]
         "500":
           description: Something unknown went wrong
@@ -103,19 +104,43 @@ components:
       properties:
         code:
           type: string
+          nullable: false
         message:
           type: string
+          nullable: false
+      required:
+        - fields
+        - message
+
+    ValidationError:
+      type: object
+      properties:
+        fields:
+          type: array
+          items:
+            type: string
+            nullable: false
+        message:
+          type: string
+      required:
+        - fields
+        - message
 
     ConversionResponse:
       type: object
+      required:
+        - convertedAmount
+        - date
       properties:
         convertedAmount:
           type: string
           format: decimal
           example: "91.25"
+          nullable: false
           description: The converted amount in the target currency
         date:
           type: string
           format: date
           description: The date when the conversion rate was valid
+          nullable: false
           example: "2024-02-20"

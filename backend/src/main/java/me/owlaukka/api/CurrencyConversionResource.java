@@ -6,11 +6,12 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import me.owlaukka.currencyconversion.CurrencyConversionService;
 import me.owlaukka.model.ConversionResponse;
-import me.owlaukka.model.Error;
+import me.owlaukka.model.ValidationError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @ApplicationScoped
 public class CurrencyConversionResource implements ConversionApi {
@@ -33,8 +34,8 @@ public class CurrencyConversionResource implements ConversionApi {
 
         if (parsedAmount.compareTo(BigDecimal.ZERO) <= 0) {
             logger.warn("Invalid amount requested for conversion: {} (must be positive)", amount);
-            var error = new Error()
-                    .code("VALIDATION_ERROR")
+            var error = new ValidationError()
+                    .fields(List.of("convertCurrency.amount"))
                     .message("Amount must be positive");
             return Response.status(Response.Status.BAD_REQUEST).entity(error).build();
         }

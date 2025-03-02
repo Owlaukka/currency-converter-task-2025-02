@@ -8,7 +8,6 @@ import me.owlaukka.currencyconversion.CurrencyConversionService;
 import me.owlaukka.rates.exceptions.ExchangeRateIntegrationBadRequestException;
 import me.owlaukka.rates.exceptions.ExchangeRateIntegrationException;
 import me.owlaukka.rates.exceptions.ExchangeRateIntegrationInvalidResponseException;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -16,12 +15,12 @@ import org.mockito.Mockito;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.containsStringIgnoringCase;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 
 @QuarkusTest
 class CurrencyConversionResourceTest {
@@ -123,8 +122,8 @@ class CurrencyConversionResourceTest {
                 .get("/conversion")
                 .then()
                 .statusCode(400)
-                .body("code", equalTo("VALIDATION_ERROR"))
-                .body("message", equalTo("Invalid input parameters: convertCurrency.sourceCurrency: must not be null"));
+                .body("fields", equalTo(List.of("convertCurrency.sourceCurrency")))
+                .body("message", containsStringIgnoringCase("sourceCurrency: must not be null"));
     }
 
     @Test
@@ -136,7 +135,7 @@ class CurrencyConversionResourceTest {
                 .get("/conversion")
                 .then()
                 .statusCode(400)
-                .body("code", equalTo("VALIDATION_ERROR"))
+                .body("fields", equalTo(List.of("convertCurrency.targetCurrency")))
                 .body("message", equalTo("Invalid input parameters: convertCurrency.targetCurrency: must not be null"));
     }
 
@@ -149,7 +148,7 @@ class CurrencyConversionResourceTest {
                 .get("/conversion")
                 .then()
                 .statusCode(400)
-                .body("code", equalTo("VALIDATION_ERROR"))
+                .body("fields", equalTo(List.of("convertCurrency.amount")))
                 .body("message", equalTo("Invalid input parameters: convertCurrency.amount: must not be null"));
     }
 
@@ -159,10 +158,11 @@ class CurrencyConversionResourceTest {
                 .when()
                 .queryParam("sourceCurrency", "USDA")
                 .queryParam("targetCurrency", "G")
+                .queryParam("amount", "100.50")
                 .get("/conversion")
                 .then()
                 .statusCode(400)
-                .body("code", equalTo("VALIDATION_ERROR"))
+                .body("fields", equalTo(List.of("convertCurrency.sourceCurrency", "convertCurrency.targetCurrency")))
                 .body("message", containsStringIgnoringCase("sourceCurrency: size must be between 3 and 3"))
                 .body("message", containsStringIgnoringCase("targetCurrency: size must be between 3 and 3"));
     }
@@ -198,21 +198,6 @@ class CurrencyConversionResourceTest {
     }
 
     @Test
-    @Disabled("TODO: not yet implemented")
-    void testInvalidAmount_Negative() {
-        given()
-            .when()
-            .queryParam("sourceCurrency", "USD")
-            .queryParam("targetCurrency", "EUR")
-            .queryParam("amount", "-100")
-            .get("/conversion")
-            .then()
-            .statusCode(400)
-            .body("code", is("VALIDATION_ERROR"))
-            .body("message", notNullValue());
-    }
-
-    @Test
     void Should_ReturnValidationError440_When_GivenZeroAsTheAmount() {
         given()
             .when()
@@ -222,7 +207,7 @@ class CurrencyConversionResourceTest {
             .get("/conversion")
             .then()
             .statusCode(400)
-            .body("code", is("VALIDATION_ERROR"))
+                .body("fields", equalTo(List.of("convertCurrency.amount")))
                 .body("message", is("Amount must be positive"));
     }
 
@@ -236,7 +221,7 @@ class CurrencyConversionResourceTest {
                 .get("/conversion")
                 .then()
                 .statusCode(400)
-                .body("code", is("VALIDATION_ERROR"))
+                .body("fields", equalTo(List.of("convertCurrency.amount")))
                 .body("message", containsStringIgnoringCase("amount: must match \"^[0-9]+(.[0-9]{1,2})?$\""));
     }
 
@@ -250,7 +235,7 @@ class CurrencyConversionResourceTest {
                 .get("/conversion")
                 .then()
                 .statusCode(400)
-                .body("code", is("VALIDATION_ERROR"))
+                .body("fields", equalTo(List.of("convertCurrency.amount")))
                 .body("message", containsStringIgnoringCase("amount: must match \"^[0-9]+(.[0-9]{1,2})?$\""));
     }
     
@@ -264,7 +249,7 @@ class CurrencyConversionResourceTest {
             .get("/conversion")
             .then()
             .statusCode(400)
-            .body("code", is("VALIDATION_ERROR"))
+                .body("fields", equalTo(List.of("convertCurrency.sourceCurrency")))
                 .body("message", containsStringIgnoringCase("sourceCurrency: must match \"^[A-Z]{3}$\""));
     }
 
@@ -278,7 +263,7 @@ class CurrencyConversionResourceTest {
                 .get("/conversion")
                 .then()
                 .statusCode(400)
-                .body("code", is("VALIDATION_ERROR"))
+                .body("fields", equalTo(List.of("convertCurrency.targetCurrency")))
                 .body("message", containsStringIgnoringCase("targetCurrency: must match \"^[A-Z]{3}$\""));
     }
 } 
