@@ -347,4 +347,47 @@ describe("CurrencyConversionForm", () => {
       expect(amountField).toHaveValue(expectedValue);
     }
   );
+
+  it.each([
+    { locale: "fi-FI", inputAmount: "123 456,78", expectedSubmittedAmount: "123456.78" },
+    { locale: "de-DE", inputAmount: "123.456,78", expectedSubmittedAmount: "123456.78" },
+    { locale: "sv-SE", inputAmount: "123 456,78", expectedSubmittedAmount: "123456.78" },
+    { locale: "en", inputAmount: "123,456.78", expectedSubmittedAmount: "123456.78" },
+    { locale: "ja", inputAmount: "123456.78", expectedSubmittedAmount: "123456.78" },
+  ])(
+    "should correctly format the amount for the API call for locale $locale",
+    async ({ locale, inputAmount, expectedSubmittedAmount }) => {
+      // Given
+      const user = userEvent.setup();
+
+      (globalThis.fetch as Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => null,
+      });
+
+      render(<CurrencyConversionForm locale={locale} />);
+
+      // When - Fill in form with a large number (123456,78 in Finnish format)
+      const sourceCurrencyField = screen.getByRole("textbox", { name: /source currency/i });
+      await user.type(sourceCurrencyField, "EUR");
+
+      const targetCurrencyField = screen.getByRole("textbox", { name: /target currency/i });
+      await user.type(targetCurrencyField, "USD");
+
+      const amountField = screen.getByRole("textbox", { name: /amount/i });
+      await user.type(amountField, inputAmount);
+      await user.tab();
+
+      // Submit the form
+      const submitButton = screen.getByRole("button", { name: /convert/i });
+      await user.click(submitButton);
+
+      // Then - Verify the API was called with the correct decimal format
+      await waitFor(() => {
+        expect(globalThis.fetch).toHaveBeenCalledWith(
+          `/api/conversion?sourceCurrency=EUR&targetCurrency=USD&amount=${expectedSubmittedAmount}`
+        );
+      });
+    }
+  );
 });

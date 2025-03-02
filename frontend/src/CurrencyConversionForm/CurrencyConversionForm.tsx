@@ -169,7 +169,8 @@ const CurrencyConversionForm: FC<CurrencyConversionFormProps> = ({ locale }) => 
                 decimalScale={2}
                 allowNegativeValue={false}
                 onValueChange={(val) => {
-                  field.onChange(val ?? "");
+                  // Needed because the component doesn't replace comma decimal-separators with dots for some reason.
+                  field.onChange(val ? val.replace(/,/g, ".") : "");
                 }}
                 formatValueOnBlur
                 intlConfig={{ locale }}
