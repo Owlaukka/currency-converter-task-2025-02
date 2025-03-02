@@ -88,7 +88,6 @@ const CurrencyConversionForm: FC<CurrencyConversionFormProps> = ({ locale }) => 
             <Input
               {...field}
               id="target-currency"
-              type="text"
               label="Target Currency"
               error={fieldState.error?.message}
               onChange={(e) => {

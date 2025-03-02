@@ -12,6 +12,7 @@ const Input = ({
   id,
   className,
   "aria-invalid": ariaInvalid,
+  type = "text",
   ...props
 }: InputProps) => {
   return (
@@ -25,6 +26,7 @@ const Input = ({
         <input
           {...props}
           id={id}
+          type={type}
           className={clsx(
             "focus:ring-primary-600",
             "block",
