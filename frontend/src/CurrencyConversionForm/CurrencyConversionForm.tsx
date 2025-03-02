@@ -1,11 +1,10 @@
 import { FC } from "react";
-import CurrencyInput from "react-currency-input-field";
 import { Controller, useForm } from "react-hook-form";
 import useCurrencyConversion from "./useCurrencyConversion";
-import clsx from "clsx";
 import Button from "../components/Button/Button";
 import ConversionResult from "./ConversionResult";
 import Input from "../components/Input/Input";
+import CurrencyInput from "../components/CurrencyInput/CurrencyInput";
 
 interface FormValues {
   sourceCurrency: string;
@@ -117,42 +116,15 @@ const CurrencyConversionForm: FC<CurrencyConversionFormProps> = ({ locale }) => 
             required: "Amount is required",
           }}
           render={({ field, fieldState }) => (
-            <div>
-              <CurrencyInput
-                id={field.name}
-                name={field.name}
-                className={clsx(
-                  "focus:ring-primary-600",
-                  "block",
-                  "w-full",
-                  "rounded-md",
-                  "border-0",
-                  "px-3",
-                  "py-2",
-                  "text-gray-900",
-                  "ring-1",
-                  "ring-inset",
-                  "focus:ring-2",
-                  "focus:ring-inset",
-                  "sm:text-sm",
-                  fieldState.error ? "ring-red-300" : "ring-gray-300"
-                )}
-                decimalScale={2}
-                allowNegativeValue={false}
-                onValueChange={(val) => {
-                  // Needed because the component doesn't replace comma decimal-separators with dots for some reason.
-                  field.onChange(val ? val.replace(/,/g, ".") : "");
-                }}
-                formatValueOnBlur
-                intlConfig={{ locale }}
-                aria-invalid={!!fieldState.error}
-              />
-              {fieldState.error && (
-                <p className="mt-2 text-sm text-red-600" role="alert">
-                  {fieldState.error.message}
-                </p>
-              )}
-            </div>
+            <CurrencyInput
+              ref={field.ref}
+              id={field.name}
+              name={field.name}
+              value={field.value}
+              onChange={field.onChange}
+              error={fieldState.error?.message}
+              locale={locale}
+            />
           )}
         />
       </div>
