@@ -4,6 +4,7 @@ import { Controller, useForm } from "react-hook-form";
 import useCurrencyConversion from "./useCurrencyConversion";
 import clsx from "clsx";
 import Button from "../components/Button/Button";
+import ConversionResult from "./ConversionResult";
 
 interface FormValues {
   sourceCurrency: string;
@@ -23,10 +24,6 @@ const CurrencyConversionForm: FC<CurrencyConversionFormProps> = ({ locale }) => 
     mode: "onBlur",
   });
   const { convertCurrency, isLoading, error, result } = useCurrencyConversion();
-
-  const dateFormatter = new Intl.DateTimeFormat(locale);
-
-  const currencyFormatter = new Intl.NumberFormat(locale);
 
   const onSubmit = async (data: FormValues) => {
     if (!data.amount) return;
@@ -198,10 +195,11 @@ const CurrencyConversionForm: FC<CurrencyConversionFormProps> = ({ locale }) => 
       )}
 
       {result && (
-        <div role="status">
-          <p>Converted amount: {currencyFormatter.format(parseFloat(result.convertedAmount!))}</p>
-          <p>Rate date: {dateFormatter.format(new Date(result.date!))}</p>
-        </div>
+        <ConversionResult
+          amount={result.convertedAmount}
+          conversionRateDate={result.date}
+          locale={locale}
+        />
       )}
     </form>
   );
