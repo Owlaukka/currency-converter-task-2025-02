@@ -6,7 +6,6 @@ interface CurrencyInputProps {
   ref: React.Ref<HTMLInputElement>;
   id: string;
   name: string;
-  value?: string | number;
   onChange: (value: string) => void;
   error?: string;
   locale: string;
@@ -17,7 +16,6 @@ const CurrencyInput: FC<CurrencyInputProps> = ({
   ref,
   id,
   name,
-  value,
   onChange,
   error,
   locale,
@@ -49,9 +47,8 @@ const CurrencyInput: FC<CurrencyInputProps> = ({
         decimalScale={2}
         allowNegativeValue={false}
         onValueChange={(val) => {
-          onChange?.(val ? val.replace(/,/g, ".") : "");
+          onChange(val ? val.replace(/,/g, ".") : "");
         }}
-        value={value}
         formatValueOnBlur
         intlConfig={{ locale }}
         aria-invalid={!!error}

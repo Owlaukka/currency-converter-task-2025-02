@@ -5,6 +5,7 @@ import Button from "../components/Button/Button";
 import ConversionResult from "./ConversionResult";
 import Input from "../components/Input/Input";
 import CurrencyInput from "../components/CurrencyInput/CurrencyInput";
+import ErrorMessage from "./ErrorMessage";
 
 interface FormValues {
   sourceCurrency: string;
@@ -119,7 +120,6 @@ const CurrencyConversionForm: FC<CurrencyConversionFormProps> = ({ locale }) => 
               ref={field.ref}
               id={field.name}
               name={field.name}
-              value={field.value}
               onChange={field.onChange}
               error={fieldState.error?.message}
               locale={locale}
@@ -132,11 +132,7 @@ const CurrencyConversionForm: FC<CurrencyConversionFormProps> = ({ locale }) => 
         {isLoading ? "Converting..." : "Convert"}
       </Button>
 
-      {error && (
-        <div role="alert" className="text-red-500">
-          {error}
-        </div>
-      )}
+      {error && <ErrorMessage message={error} />}
 
       {result && (
         <ConversionResult

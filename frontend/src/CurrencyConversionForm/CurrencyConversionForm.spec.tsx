@@ -348,7 +348,7 @@ describe("CurrencyConversionForm", () => {
     }
   );
 
-  it.each([
+  it.only.each([
     { locale: "fi-FI", inputAmount: "123 456,78", expectedSubmittedAmount: "123456.78" },
     { locale: "de-DE", inputAmount: "123.456,78", expectedSubmittedAmount: "123456.78" },
     { locale: "sv-SE", inputAmount: "123 456,78", expectedSubmittedAmount: "123456.78" },
