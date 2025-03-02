@@ -1,8 +1,8 @@
 import { FC, useMemo } from "react";
 
 interface ConversionResultProps {
-  amount?: string;
-  conversionRateDate?: string;
+  amount: string;
+  conversionRateDate: string;
   locale: string;
 }
 
@@ -12,10 +12,8 @@ const ConversionResult: FC<ConversionResultProps> = ({ amount, conversionRateDat
 
   return (
     <div role="status">
-      <p>Converted amount: {amount ? currencyFormatter.format(parseFloat(amount)) : "N/A"}</p>
-      <p>
-        Rate date: {conversionRateDate ? dateFormatter.format(new Date(conversionRateDate)) : "N/A"}
-      </p>
+      <p>Converted amount: {currencyFormatter.format(parseFloat(amount))}</p>
+      <p>Rate date: {dateFormatter.format(new Date(conversionRateDate))}</p>
     </div>
   );
 };

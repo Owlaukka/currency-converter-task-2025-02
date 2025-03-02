@@ -20,6 +20,7 @@ paths:
             type: string
             minLength: 3
             maxLength: 3
+            pattern: "^[A-Z]{3}$"
             example: "USD"
         - name: targetCurrency
           in: query
@@ -29,6 +30,7 @@ paths:
             type: string
             minLength: 3
             maxLength: 3
+            pattern: "^[A-Z]{3}$"
             example: "EUR"
         - name: amount
           in: query
@@ -36,8 +38,7 @@ paths:
           description: Amount to convert in the source currency (must be positive)
           schema:
             type: string
-            format: decimal
-            minimum: 0.01
+            pattern: "^[0-9]+(.[0-9]{1,2})?$"
             example: "100.50"
       responses:
         "200":
@@ -51,7 +52,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ValidationError"
         "429":
           description: Rate limit exceeded
           content:
@@ -70,7 +71,32 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-
+  /currencies:
+    get:
+      summary: Get supported currencies
+      operationId: getSupportedCurrencies
+      tags:
+        - currencies
+      responses:
+        "200":
+          description: List of supported currency codes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  minLength: 3
+                  maxLength: 3
+                  pattern: "^[A-Z]{3}$"
+                  nullable: false
+                example: ["USD", "EUR", "GBP", "JPY"]
+        "500":
+          description: Something unknown went wrong
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     Error:
@@ -78,19 +104,43 @@ components:
       properties:
         code:
           type: string
+          nullable: false
         message:
           type: string
+          nullable: false
+      required:
+        - fields
+        - message
+
+    ValidationError:
+      type: object
+      properties:
+        fields:
+          type: array
+          items:
+            type: string
+            nullable: false
+        message:
+          type: string
+      required:
+        - fields
+        - message
 
     ConversionResponse:
       type: object
+      required:
+        - convertedAmount
+        - date
       properties:
         convertedAmount:
           type: string
           format: decimal
           example: "91.25"
+          nullable: false
           description: The converted amount in the target currency
         date:
           type: string
           format: date
           description: The date when the conversion rate was valid
+          nullable: false
           example: "2024-02-20"
