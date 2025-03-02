@@ -1,7 +1,7 @@
 import { FC } from "react";
 import CurrencyInput from "react-currency-input-field";
 import { Controller, useForm } from "react-hook-form";
-import useCurrencyConversion from "../hooks/useCurrencyConversion";
+import useCurrencyConversion from "./useCurrencyConversion";
 import clsx from "clsx";
 
 interface FormValues {
