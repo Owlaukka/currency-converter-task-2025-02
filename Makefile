@@ -1,4 +1,6 @@
-.PHONY: all clean clean-frontend clean-backend build-frontend build-backend
+ENV ?=
+
+.PHONY: all clean clean-frontend clean-backend build-frontend build-backend start start-frontend start-backend
 
 # Default target
 all: build
@@ -22,3 +24,13 @@ build-backend:
 
 # Build everything
 build: build-frontend build-backend
+
+# Start development servers
+start-frontend:
+	cd frontend && pnpm dev
+
+start-backend:
+	cd backend && $(ENV) ./gradlew quarkusDev
+
+start:
+	make -j2 start-frontend start-backend
