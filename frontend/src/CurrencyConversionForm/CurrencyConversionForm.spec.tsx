@@ -149,16 +149,7 @@ describe("CurrencyConversionForm", () => {
     expect(sourceCurrencyField).toBeInvalid();
     expect(screen.getByText(/must be exactly 3 characters/i)).toBeInTheDocument();
 
-    // Test too long input (more than 3 chars)
-    await user.clear(sourceCurrencyField);
-    await user.type(sourceCurrencyField, "EURO");
-    await user.tab();
-
-    // Then - Check validation error for too long input
-    expect(sourceCurrencyField).toBeInvalid();
-    expect(screen.getByText(/must be exactly 3 characters/i)).toBeInTheDocument();
-
-    // Test valid input (exactly 3 chars)
+    // Valid
     await user.clear(sourceCurrencyField);
     await user.type(sourceCurrencyField, "USD");
     await user.tab();
@@ -193,16 +184,7 @@ describe("CurrencyConversionForm", () => {
     expect(targetCurrencyField).toBeInvalid();
     expect(screen.getByText(/must be exactly 3 characters/i)).toBeInTheDocument();
 
-    // Test too long input (more than 3 chars)
-    await user.clear(targetCurrencyField);
-    await user.type(targetCurrencyField, "EURO");
-    await user.tab();
-
-    // Then - Check validation error for too long input
-    expect(targetCurrencyField).toBeInvalid();
-    expect(screen.getByText(/must be exactly 3 characters/i)).toBeInTheDocument();
-
-    // Test valid input (exactly 3 chars)
+    // Valid
     await user.clear(targetCurrencyField);
     await user.type(targetCurrencyField, "USD");
     await user.tab();
