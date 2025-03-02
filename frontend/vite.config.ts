@@ -5,7 +5,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { compression } from "vite-plugin-compression2";
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     tailwindcss(),
@@ -14,6 +14,18 @@ export default defineConfig({
       threshold: 1024,
     }),
   ],
+  build: {
+    sourcemap: mode === "development",
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            return "vendor";
+          }
+        },
+      },
+    },
+  },
   server: {
     proxy: {
       "/api": {
@@ -31,4 +43,4 @@ export default defineConfig({
       provider: "v8",
     },
   },
-});
+}));
