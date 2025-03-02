@@ -23,6 +23,10 @@ const CurrencyConversionForm: FC<CurrencyConversionFormProps> = ({ locale }) => 
   });
   const { convertCurrency, isLoading, error, result } = useCurrencyConversion();
 
+  const dateFormatter = new Intl.DateTimeFormat(locale);
+
+  const currencyFormatter = new Intl.NumberFormat(locale);
+
   const onSubmit = async (data: FormValues) => {
     if (!data.amount) return;
 
@@ -208,8 +212,8 @@ const CurrencyConversionForm: FC<CurrencyConversionFormProps> = ({ locale }) => 
 
       {result && (
         <div role="status">
-          <p>Converted amount: {result.convertedAmount}</p>
-          <p>Rate date: {result.date}</p>
+          <p>Converted amount: {currencyFormatter.format(parseFloat(result.convertedAmount!))}</p>
+          <p>Rate date: {dateFormatter.format(new Date(result.date!))}</p>
         </div>
       )}
     </form>

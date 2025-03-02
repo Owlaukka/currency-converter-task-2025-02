@@ -200,7 +200,7 @@ describe("CurrencyConversionForm", () => {
     const mockResponse: paths["/conversion"]["get"]["responses"]["200"]["content"]["application/json"] =
       {
         date: "2023-04-25",
-        convertedAmount: "110",
+        convertedAmount: "420000.56",
       };
 
     // Mock the API response
@@ -232,11 +232,10 @@ describe("CurrencyConversionForm", () => {
       expect(globalThis.fetch).toHaveBeenCalledWith(
         "/api/conversion?sourceCurrency=EUR&targetCurrency=USD&amount=100.00"
       );
-
-      // Verify the result is displayed
-      expect(screen.getByText(/Converted amount: 110/i)).toBeInTheDocument();
-      expect(screen.getByText(/Date: 2023-04-25/i)).toBeInTheDocument();
     });
+    // Verify the result is displayed
+    expect(screen.getByText(/Converted amount: 420,000.56/i)).toBeInTheDocument();
+    expect(screen.getByText(/Date: 4\/25\/2023/i)).toBeInTheDocument();
   });
 
   it("should display an error message when the API call fails", async () => {
