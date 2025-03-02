@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Common paths that shouldn't be crawled
+Disallow: /api/
