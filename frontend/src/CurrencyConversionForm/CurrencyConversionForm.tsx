@@ -5,6 +5,7 @@ import useCurrencyConversion from "./useCurrencyConversion";
 import clsx from "clsx";
 import Button from "../components/Button/Button";
 import ConversionResult from "./ConversionResult";
+import Input from "../components/Input/Input";
 
 interface FormValues {
   sourceCurrency: string;
@@ -12,7 +13,7 @@ interface FormValues {
   amount?: number;
 }
 
-const PERMITTED_CURRENCY_CHARACTERS_REGEXP = /[^a-zA-Z]{0,3}/g;
+const PERMITTED_CURRENCY_CHARACTERS_REGEXP = /[^a-zA-Z]/g;
 
 interface CurrencyConversionFormProps {
   // These are just helpful example types
@@ -42,95 +43,67 @@ const CurrencyConversionForm: FC<CurrencyConversionFormProps> = ({ locale }) => 
       className="space-y-6"
     >
       <div className="grid gap-6 md:grid-cols-2">
-        <div className="space-y-2">
-          <label htmlFor="source-currency" className="block text-sm font-medium text-gray-700">
-            Source Currency
-          </label>
-          <Controller
-            name="sourceCurrency"
-            control={control}
-            defaultValue=""
-            rules={{
-              validate: (value) => {
-                if (!value) return "Source currency is required";
-                if (value.length !== 3) return "Must be exactly 3 characters long";
-                return true;
-              },
-            }}
-            render={({ field, fieldState }) => (
-              <div>
-                <input
-                  {...field}
-                  id="source-currency"
-                  type="text"
-                  className={`focus:ring-primary-600 block w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset focus:ring-2 focus:ring-inset sm:text-sm ${
-                    fieldState.error ? "ring-red-300" : "ring-gray-300"
-                  }`}
-                  onChange={(e) => {
-                    const filteredValue = e.target.value
-                      .replace(PERMITTED_CURRENCY_CHARACTERS_REGEXP, "")
-                      .toUpperCase();
+        <Controller
+          name="sourceCurrency"
+          control={control}
+          defaultValue=""
+          rules={{
+            validate: (value) => {
+              if (!value) return "Source currency is required";
+              if (value.length !== 3) return "Must be exactly 3 characters long";
+              return true;
+            },
+          }}
+          render={({ field, fieldState }) => (
+            <Input
+              {...field}
+              id="source-currency"
+              type="text"
+              label="Source Currency"
+              error={fieldState.error?.message}
+              onChange={(e) => {
+                const filteredValue = e.target.value
+                  .replace(PERMITTED_CURRENCY_CHARACTERS_REGEXP, "")
+                  .toUpperCase();
 
-                    if (filteredValue.length <= 3) {
-                      field.onChange(filteredValue);
-                    }
-                  }}
-                  aria-invalid={!!fieldState.error}
-                />
-                {fieldState.error && (
-                  <p className="mt-2 text-sm text-red-600" role="alert">
-                    {fieldState.error.message}
-                  </p>
-                )}
-              </div>
-            )}
-          />
-        </div>
+                if (filteredValue.length <= 3) {
+                  field.onChange(filteredValue);
+                }
+              }}
+            />
+          )}
+        />
 
-        <div className="space-y-2">
-          <label htmlFor="target-currency" className="block text-sm font-medium text-gray-700">
-            Target Currency
-          </label>
-          <Controller
-            name="targetCurrency"
-            control={control}
-            defaultValue=""
-            rules={{
-              validate: (value) => {
-                if (!value) return "Target currency is required";
-                if (value.length !== 3) return "Must be exactly 3 characters long";
-                return true;
-              },
-            }}
-            render={({ field, fieldState }) => (
-              <div>
-                <input
-                  {...field}
-                  id="target-currency"
-                  type="text"
-                  className={`focus:ring-primary-600 block w-full rounded-md border-0 px-3 py-2 text-gray-900 ring-1 ring-inset focus:ring-2 focus:ring-inset sm:text-sm ${
-                    fieldState.error ? "ring-red-300" : "ring-gray-300"
-                  }`}
-                  onChange={(e) => {
-                    const filteredValue = e.target.value
-                      .replace(PERMITTED_CURRENCY_CHARACTERS_REGEXP, "")
-                      .toUpperCase();
+        <Controller
+          name="targetCurrency"
+          control={control}
+          defaultValue=""
+          rules={{
+            validate: (value) => {
+              if (!value) return "Target currency is required";
+              if (value.length !== 3) return "Must be exactly 3 characters long";
+              return true;
+            },
+          }}
+          render={({ field, fieldState }) => (
+            <Input
+              {...field}
+              id="target-currency"
+              type="text"
+              label="Target Currency"
+              error={fieldState.error?.message}
+              onChange={(e) => {
+                const filteredValue = e.target.value
+                  .replace(PERMITTED_CURRENCY_CHARACTERS_REGEXP, "")
+                  .toUpperCase();
 
-                    if (filteredValue.length <= 3) {
-                      field.onChange(filteredValue);
-                    }
-                  }}
-                  aria-invalid={!!fieldState.error}
-                />
-                {fieldState.error && (
-                  <p className="mt-2 text-sm text-red-600" role="alert">
-                    {fieldState.error.message}
-                  </p>
-                )}
-              </div>
-            )}
-          />
-        </div>
+                if (filteredValue.length <= 3) {
+                  field.onChange(filteredValue);
+                }
+              }}
+            />
+          )}
+        />
       </div>
 
       <div className="space-y-2">
