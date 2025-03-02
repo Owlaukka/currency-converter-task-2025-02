@@ -3,6 +3,7 @@ import CurrencyInput from "react-currency-input-field";
 import { Controller, useForm } from "react-hook-form";
 import useCurrencyConversion from "./useCurrencyConversion";
 import clsx from "clsx";
+import Button from "../components/Button/Button";
 
 interface FormValues {
   sourceCurrency: string;
@@ -186,24 +187,9 @@ const CurrencyConversionForm: FC<CurrencyConversionFormProps> = ({ locale }) => 
         />
       </div>
 
-      <button
-        type="submit"
-        disabled={isLoading}
-        className={clsx(
-          "rounded-2xl",
-          "border",
-          "border-gray-800",
-          "bg-gray-600",
-          "px-3",
-          "py-1",
-          "text-gray-50",
-          "transition-colors",
-          "hover:cursor-pointer hover:bg-gray-700",
-          "disabled:cursor-not-allowed disabled:border-gray-500 disabled:bg-gray-400"
-        )}
-      >
+      <Button type="submit" isLoading={isLoading}>
         {isLoading ? "Converting..." : "Convert"}
-      </button>
+      </Button>
 
       {error && (
         <div role="alert" className="text-red-500">
