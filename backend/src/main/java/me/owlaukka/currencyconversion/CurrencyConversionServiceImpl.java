@@ -70,14 +70,18 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
         var isSourceCurrencyValid = currencies.stream().anyMatch(currency -> currency.equals(sourceCurrency));
         var isTargetCurrencyValid = currencies.stream().anyMatch(currency -> currency.equals(targetCurrency));
 
+        if (!isSourceCurrencyValid && !isTargetCurrencyValid) {
+            logger.warn("Invalid source and target currency provided: {} and {}", sourceCurrency, targetCurrency);
+            throw new CustomValidationException("Source or target currencies are not valid", List.of("convertCurrency.sourceCurrency", "convertCurrency.targetCurrency"));
+        }
         if (!isSourceCurrencyValid) {
             logger.warn("Invalid source currency provided: {}", sourceCurrency);
-            throw new IllegalArgumentException("Source currency is not valid");
+            throw new CustomValidationException("Source currency is not valid", List.of("convertCurrency.sourceCurrency"));
         }
 
         if (!isTargetCurrencyValid) {
             logger.warn("Invalid target currency provided: {}", targetCurrency);
-            throw new IllegalArgumentException("Target currency is not valid");
+            throw new CustomValidationException("Target currency is not valid", List.of("convertCurrency.targetCurrency"));
         }
 
         logger.debug("Currency validation successful for {} and {}", sourceCurrency, targetCurrency);

@@ -5,6 +5,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.ws.rs.core.Response;
 import me.owlaukka.currencyconversion.ConversionResult;
 import me.owlaukka.currencyconversion.CurrencyConversionService;
+import me.owlaukka.currencyconversion.CustomValidationException;
 import me.owlaukka.rates.exceptions.ExchangeRateIntegrationBadRequestException;
 import me.owlaukka.rates.exceptions.ExchangeRateIntegrationException;
 import me.owlaukka.rates.exceptions.ExchangeRateIntegrationInvalidResponseException;
@@ -184,7 +185,7 @@ class CurrencyConversionResourceTest {
     @Test
     void Should_Return400Error_When_RequestingInvalidSourceCurrency() {
         Mockito.when(currencyConversionService.convert(Mockito.anyString(), Mockito.anyString(), Mockito.any(BigDecimal.class)))
-                .thenThrow(new IllegalArgumentException("Bad source currency"));
+                .thenThrow(new CustomValidationException("Bad source currency", List.of("convertCurrency.sourceCurrency", "convertCurrency.targetCurrency")));
 
         given()
                 .when()
@@ -194,7 +195,8 @@ class CurrencyConversionResourceTest {
                 .get("/conversion")
                 .then()
                 .statusCode(400)
-                .body("code", equalTo("BAD_REQUEST"));
+                .body("message", equalTo("Bad source currency"))
+                .body("fields", equalTo(List.of("convertCurrency.sourceCurrency", "convertCurrency.targetCurrency")));
     }
 
     @Test

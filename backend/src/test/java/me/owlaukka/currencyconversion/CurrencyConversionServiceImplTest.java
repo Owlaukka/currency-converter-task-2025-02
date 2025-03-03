@@ -94,7 +94,7 @@ class CurrencyConversionServiceImplTest {
         }
 
         @Test
-        void Should_ThrowIllegalArgumentException_When_RequestingRatesForInvalidCurrencies() {
+        void Should_ThrowCustomValidationException_When_RequestingRatesForInvalidCurrencies() {
             // Given
             var givenSourceCurrencyCode = "YEN";
             var givenTargetCurrencyCode = "MAR";
@@ -106,14 +106,14 @@ class CurrencyConversionServiceImplTest {
                     .thenReturn(returnedCurrencies);
 
             // When + Then
-            assertThrows(IllegalArgumentException.class, () ->
+            assertThrows(CustomValidationException.class, () ->
                             currencyConversionService.convert(givenSourceCurrencyCode, givenTargetCurrencyCode, givenAmountToConvert),
                     "Invalid currency codes"
             );
         }
 
         @Test
-        void Should_ThrowIllegalArgumentException_When_RequestedSourceCurrencyIsNotValue() {
+        void Should_ThrowCustomValidationException_When_RequestedSourceCurrencyIsNotInTheResponse() {
             // Given
             var givenSourceCurrencyCode = "GBP";
             var givenTargetCurrencyCode = "EUR";
@@ -125,14 +125,14 @@ class CurrencyConversionServiceImplTest {
                     .thenReturn(returnedCurrencies);
 
             // When + Then
-            assertThrows(IllegalArgumentException.class, () ->
+            assertThrows(CustomValidationException.class, () ->
                             currencyConversionService.convert(givenSourceCurrencyCode, givenTargetCurrencyCode, givenAmountToConvert),
                     "Source currency is not valid"
             );
         }
 
         @Test
-        void Should_ThrowIllegalArgumentException_When_RequestedTargetCurrencyIsNotValue() {
+        void Should_ThrowCustomValidationException_When_RequestedTargetCurrencyIsNotInTheResponse() {
             // Given
             var givenSourceCurrencyCode = "USD";
             var givenTargetCurrencyCode = "GBP";
@@ -144,10 +144,32 @@ class CurrencyConversionServiceImplTest {
                     .thenReturn(returnedCurrencies);
 
             // When + Then
-            assertThrows(IllegalArgumentException.class, () ->
-                            currencyConversionService.convert(givenSourceCurrencyCode, givenTargetCurrencyCode, givenAmountToConvert),
-                    "Target currency is not valid"
+            var thrownException = assertThrows(CustomValidationException.class, () ->
+                    currencyConversionService.convert(givenSourceCurrencyCode, givenTargetCurrencyCode, givenAmountToConvert)
             );
+
+            assertEquals("Target currency is not valid", thrownException.getMessage());
+        }
+
+        @Test
+        void Should_ThrowCustomValidationException_When_RequestedSourceAndTargetCurrencyIsNotInTheResponse() {
+            // Given
+            var givenSourceCurrencyCode = "USD";
+            var givenTargetCurrencyCode = "GBP";
+            var givenAmountToConvert = new BigDecimal("100");
+
+            List<String> returnedCurrencies = List.of("CHF", "EUR");
+
+            Mockito.when(exchangeRateService.getCurrencies(Mockito.anyList()))
+                    .thenReturn(returnedCurrencies);
+
+            // When + Then
+            var throwException = assertThrows(CustomValidationException.class, () ->
+                    currencyConversionService.convert(givenSourceCurrencyCode, givenTargetCurrencyCode, givenAmountToConvert)
+            );
+
+            assertEquals(List.of("convertCurrency.sourceCurrency", "convertCurrency.targetCurrency"), throwException.getFields());
+            assertEquals("Source or target currencies are not valid", throwException.getMessage());
         }
     }
 
