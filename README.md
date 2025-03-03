@@ -71,3 +71,12 @@ docker-compose up
 This only supports USD-to-GBP conversion and EUR-to-CHF conversion currently.
 
 For detailed development instructions, refer to the respective README files in the frontend and backend directories.
+
+### Out of scope
+
+The following features were considered but left out of scope for this implementation:
+
+- Authentication and authorization
+- Frontend i18n support
+- Automated pipelines for build (and deployment)
+- Production-ready infrastructure setup
