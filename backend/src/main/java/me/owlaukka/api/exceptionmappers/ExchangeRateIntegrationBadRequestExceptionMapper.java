@@ -6,11 +6,16 @@ import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 import me.owlaukka.model.Error;
 import me.owlaukka.rates.exceptions.ExchangeRateIntegrationBadRequestException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Provider
 public class ExchangeRateIntegrationBadRequestExceptionMapper implements ExceptionMapper<ExchangeRateIntegrationBadRequestException> {
+    private static final Logger logger = LoggerFactory.getLogger(ExchangeRateIntegrationBadRequestExceptionMapper.class);
+
     @Override
     public Response toResponse(ExchangeRateIntegrationBadRequestException e) {
+        logger.warn("Bad request to exchange rate integration: {}", e.getMessage());
         Error error = new Error()
                 .code(Response.Status.BAD_REQUEST.name())
                 .message("Bad request to exchange rate integration");
