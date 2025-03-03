@@ -1,51 +1,65 @@
-# Currency-conversion App
+# Currency Converter UI
 
-## TODOs
+A React-based currency conversion application that allows users to convert amounts between different currencies using a RESTful API.
 
-- Add i18n support
-- Improve linting (see below)
-- Add searchable source and target currency-selection using currency list data from the swop
-- Set better default-values to currency-selections and amount
-- Handle possible errors from invalid locale on currency-amount field
+## Features
 
-### Expanding the ESLint configuration
+- Currency conversion with source and target currency selection
+- Amount input with locale-aware formatting
+- Form validation for:
+  - 3-letter currency codes
+  - Required amount input
+- Loading states during API calls
+- Error handling for API responses
+- Responsive layout
+- Accessibility focused implementation
+- Comprehensive test coverage
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Development
 
-- Configure the top-level `parserOptions` property like this:
+### Prerequisites
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
+- Node.js 22+
+- pnpm
+  - npm or yarn might work but not guaranteed
+
+### Setup
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start development server
+pnpm dev
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+### Available Scripts
 
-```js
-// eslint.config.js
-import react from "eslint-plugin-react";
+- `pnpm dev` - Start development server
+- `pnpm build` - Build for production
+- `pnpm preview` - Preview production build
+- `pnpm test` - Run tests
+- `pnpm test:watch` - Run tests in watch mode
+- `pnpm test:coverage` - Generate test coverage report
+- `pnpm test:ui` - Open test UI
+- `pnpm lint` - Run ESLint and Prettier check
+- `pnpm format` - Format code with Prettier
+- `pnpm format:check` - Check code formatting
+- `pnpm generate-types` - Generate TypeScript types from OpenAPI spec that is used to integrate to the backend
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: "18.3" } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs["jsx-runtime"].rules,
-  },
-});
-```
+## Future Improvements
+
+- Add i18n support for UI text
+- Implement searchable currency selection using API's currency list endpoint
+- Add better error handling for invalid locale configurations
+- Add more comprehensive error state handling
+- More comprehensive ESLint rules and configuration
+
+## API Integration
+
+The app integrates with a RESTful API that provides:
+
+- Currency conversion endpoint (`/conversion`)
+- Supported currencies endpoint (`/currencies`)
+
+API documentation is available in `backend-api.yaml` using OpenAPI 3.0.3 specification.
