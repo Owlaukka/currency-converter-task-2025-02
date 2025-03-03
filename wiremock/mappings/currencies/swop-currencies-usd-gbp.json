@@ -1,0 +1,32 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/swop/graphql",
+    "bodyPatterns": [
+      {
+        "contains": "currencies"
+      },
+      {
+        "matches": ".*currencyCodes.*USD.*GBP.*"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "data": {
+        "currencies": [
+          {
+            "code": "USD"
+          },
+          {
+            "code": "GBP"
+          }
+        ]
+      }
+    }
+  }
+}

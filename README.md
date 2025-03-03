@@ -58,4 +58,16 @@ The project uses a Makefile to orchestrate common tasks. Available commands:
 - `make start-frontend` - Start frontend development server
 - `make start-backend` - Start backend development server
 
+### Development with WireMock
+
+For development without a real Swop API key or SWOP_URL, you can use WireMock to mock the API:
+
+1. Start WireMock using docker-compose:
+
+```bash
+docker-compose up
+```
+
+This only supports USD-to-GBP conversion and EUR-to-CHF conversion.
+
 For detailed development instructions, refer to the respective README files in the frontend and backend directories.

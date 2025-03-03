@@ -1,0 +1,49 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/swop/graphql",
+    "headers": {
+      "Accept": {
+        "equalTo": "application/json"
+      },
+      "Authorization": {
+        "contains": "ApiKey"
+      },
+      "Content-Type": {
+        "contains": "application/json"
+      }
+    },
+    "bodyPatterns": [
+      {
+        "contains": "latest"
+      },
+      {
+        "matches": ".*quoteCurrencies.*USD.*GBP.*"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "data": {
+        "latest": [
+          {
+            "baseCurrency": "EUR",
+            "quoteCurrency": "USD",
+            "quote": 1.2,
+            "date": "2024-02-21"
+          },
+          {
+            "baseCurrency": "EUR",
+            "quoteCurrency": "GBP",
+            "quote": 0.8,
+            "date": "2024-02-21"
+          }
+        ]
+      }
+    }
+  }
+}
