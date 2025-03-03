@@ -25,10 +25,10 @@ make build
 
 ### Running the Application
 
-Start both frontend and backend development servers:
+Start both frontend and backend development servers (you need to set SWOP_URL and SWOP_API_KEY to valid values for this to work with the real integration):
 
 ```bash
-make start
+make start ENV="SWOP_URL=https://swop.cx/graphql SWOP_API_KEY=<your-api-key>"
 ```
 
 Or start them individually:
@@ -38,8 +38,10 @@ Or start them individually:
 make start-frontend
 
 # Backend only
-make start-backend
+make start-backend ENV="SWOP_URL=https://swop.cx/graphql SWOP_API_KEY=<your-api-key>"
 ```
+
+You may also start both frontend and backend individually from inside their directories.
 
 The frontend will be available at `http://localhost:5173`
 The backend will be available at `http://localhost:8080`
