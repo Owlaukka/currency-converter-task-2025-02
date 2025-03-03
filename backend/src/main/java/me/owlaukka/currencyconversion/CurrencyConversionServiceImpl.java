@@ -32,7 +32,6 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
     @Override
     public ConversionResult convert(String sourceCurrency, String targetCurrency, BigDecimal amount) {
         logger.debug("Converting {} {} to {}", amount, sourceCurrency, targetCurrency);
-        // TODO: parallelize these requests?
         checkCurrenciesExist(sourceCurrency, targetCurrency);
 
         var exchangeRate = exchangeRateService.getEuroRatesForSourceAndTargetCurrency(sourceCurrency, targetCurrency);

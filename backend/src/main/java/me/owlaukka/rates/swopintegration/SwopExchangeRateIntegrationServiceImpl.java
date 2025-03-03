@@ -101,7 +101,6 @@ public class SwopExchangeRateIntegrationServiceImpl implements ExchangeRateServi
     @Timeout(5000)
     @Retry(maxRetries = 1, delay = 1000)
     @CacheResult(cacheName = "currencies")
-    // TODO: maybe make this a boolean method and return true if all currencies were found?
     public List<String> getCurrencies(List<String> currencyCodes) {
         logger.info("Validating currencies: {}", currencyCodes);
 
