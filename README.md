@@ -68,6 +68,6 @@ For development without a real Swop API key or SWOP_URL, you can use WireMock to
 docker-compose up
 ```
 
-This only supports USD-to-GBP conversion and EUR-to-CHF conversion.
+This only supports USD-to-GBP conversion and EUR-to-CHF conversion currently.
 
 For detailed development instructions, refer to the respective README files in the frontend and backend directories.
