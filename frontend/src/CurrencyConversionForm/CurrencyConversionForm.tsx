@@ -132,7 +132,7 @@ const CurrencyConversionForm: FC<CurrencyConversionFormProps> = ({ locale }) => 
         {isLoading ? "Converting..." : "Convert"}
       </Button>
 
-      {error && <ErrorMessage message={error} />}
+      {error && <ErrorMessage errorState={error} />}
 
       {result && (
         <ConversionResult

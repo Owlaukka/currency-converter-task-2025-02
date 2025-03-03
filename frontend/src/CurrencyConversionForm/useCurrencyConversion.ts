@@ -1,10 +1,13 @@
 import { useState } from "react";
-import type { paths } from "../types/backend-api";
+import type { components, paths } from "../types/backend-api";
 
 type ConversionResponse =
   paths["/conversion"]["get"]["responses"]["200"]["content"]["application/json"];
 
-type ErrorResponse = paths["/conversion"]["get"]["responses"]["400"]["content"]["application/json"];
+type ErrorResponse = components["schemas"]["Error"];
+
+type ValidationErrorResponse =
+  paths["/conversion"]["get"]["responses"]["400"]["content"]["application/json"];
 
 interface ConversionParams {
   sourceCurrency: string;
@@ -12,9 +15,14 @@ interface ConversionParams {
   amount: number;
 }
 
+export interface CurrencyConversionApiErrorState {
+  message: string;
+  invalidFields?: string[];
+}
+
 const useCurrencyConversion = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<CurrencyConversionApiErrorState>();
   const [result, setResult] = useState<ConversionResponse>();
 
   const convertCurrency = async (params: ConversionParams) => {
@@ -31,15 +39,27 @@ const useCurrencyConversion = () => {
 
       const response = await fetch(`/api/conversion?${urlParams}`);
 
-      if (!response.ok) {
-        const errorData = (await response.json()) as ErrorResponse;
-        throw new Error(errorData.message ?? "Conversion failed");
+      switch (response.status) {
+        case 200: {
+          const result = (await response.json()) as ConversionResponse;
+          setResult(result);
+          break;
+        }
+        case 400: {
+          const errorData = (await response.json()) as ValidationErrorResponse;
+          setError({ message: errorData.message, invalidFields: errorData.fields });
+          break;
+        }
+        default: {
+          const errorData = (await response.json()) as ErrorResponse;
+          setError({ message: errorData.message });
+          break;
+        }
       }
-
-      const result = (await response.json()) as ConversionResponse;
-      setResult(result);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Conversion failed");
+      // Handle unknown errors
+      if (!error)
+        setError(e instanceof Error ? { message: e.message } : { message: "Conversion failed" });
     } finally {
       setIsLoading(false);
     }

@@ -72,7 +72,7 @@ public class CurrencyConversionServiceImpl implements CurrencyConversionService 
 
         if (!isSourceCurrencyValid && !isTargetCurrencyValid) {
             logger.warn("Invalid source and target currency provided: {} and {}", sourceCurrency, targetCurrency);
-            throw new CustomValidationException("Source or target currencies are not valid", List.of("convertCurrency.sourceCurrency", "convertCurrency.targetCurrency"));
+            throw new CustomValidationException("Source and target currencies are not valid", List.of("convertCurrency.sourceCurrency", "convertCurrency.targetCurrency"));
         }
         if (!isSourceCurrencyValid) {
             logger.warn("Invalid source currency provided: {}", sourceCurrency);

@@ -169,7 +169,7 @@ class CurrencyConversionServiceImplTest {
             );
 
             assertEquals(List.of("convertCurrency.sourceCurrency", "convertCurrency.targetCurrency"), throwException.getFields());
-            assertEquals("Source or target currencies are not valid", throwException.getMessage());
+            assertEquals("Source and target currencies are not valid", throwException.getMessage());
         }
     }
 

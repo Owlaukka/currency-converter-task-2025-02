@@ -205,7 +205,7 @@ describe("CurrencyConversionForm", () => {
 
     // Mock the API response
     (globalThis.fetch as Mock).mockResolvedValueOnce({
-      ok: true,
+      status: 200,
       json: async () => mockResponse,
     });
 
@@ -289,7 +289,7 @@ describe("CurrencyConversionForm", () => {
     // Mock the API call to use our controllable Promise
     (globalThis.fetch as Mock).mockReturnValueOnce(
       fetchPromise.then(() => ({
-        ok: true,
+        status: 200,
         json: async () => mockResponse,
       }))
     );
@@ -348,7 +348,7 @@ describe("CurrencyConversionForm", () => {
     }
   );
 
-  it.only.each([
+  it.each([
     { locale: "fi-FI", inputAmount: "123 456,78", expectedSubmittedAmount: "123456.78" },
     { locale: "de-DE", inputAmount: "123.456,78", expectedSubmittedAmount: "123456.78" },
     { locale: "sv-SE", inputAmount: "123 456,78", expectedSubmittedAmount: "123456.78" },
@@ -361,7 +361,7 @@ describe("CurrencyConversionForm", () => {
       const user = userEvent.setup();
 
       (globalThis.fetch as Mock).mockResolvedValueOnce({
-        ok: true,
+        status: 200,
         json: async () => null,
       });
 
@@ -390,4 +390,44 @@ describe("CurrencyConversionForm", () => {
       });
     }
   );
+
+  it("should display error messages for invalid fields when API returns 400", async () => {
+    // Given
+    const errorResponse: paths["/conversion"]["get"]["responses"]["400"]["content"]["application/json"] =
+      {
+        fields: ["sourceCurrency", "targetCurrency"],
+        message: "Invalid fields",
+      };
+
+    // Mock the API to return a 400 error with invalid fields
+    (globalThis.fetch as Mock).mockResolvedValueOnce({
+      status: 400,
+      json: async () => errorResponse,
+    });
+
+    const user = userEvent.setup();
+    render(<CurrencyConversionForm locale="en-US" />);
+
+    // When - Fill in the form
+    const sourceCurrencyField = screen.getByRole("textbox", { name: /source currency/i });
+    await user.type(sourceCurrencyField, "XYZ");
+
+    const targetCurrencyField = screen.getByRole("textbox", { name: /target currency/i });
+    await user.type(targetCurrencyField, "ABC");
+
+    const amountField = screen.getByRole("textbox", { name: /amount/i });
+    await user.type(amountField, "100");
+
+    // Submit the form
+    const submitButton = screen.getByRole("button", { name: /convert/i });
+    await user.click(submitButton);
+
+    // Then - Verify error messages are displayed for each invalid field
+    await waitFor(() => {
+      expect(screen.getByText(errorResponse.message)).toBeInTheDocument();
+    });
+    errorResponse.fields.forEach((field) => {
+      expect(screen.getByText(new RegExp(field, "i"))).toBeInTheDocument();
+    });
+  });
 });
